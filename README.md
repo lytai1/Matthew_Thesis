@@ -11,7 +11,7 @@ DLTK: https://dltk.github.io/
 Reading medical imagines in tensorflow. Done using the .nii format. 
 
 The process is depicted below:
-![image loading process](Documenation/image_loading.png)
+![image loading process](Documentation/image_loading.png)
 
 NIFTI-1: https://nifti.nimh.nih.gov/nifti-1/
 The image format used
