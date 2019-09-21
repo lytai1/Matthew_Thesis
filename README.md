@@ -22,3 +22,13 @@ Read the scan into python and compute the diffusivity, mean anisotropy and RGB o
 
 The process is depicted below:
 ![diffusion calculation](Documentation/diffusion_tensor_imaging_process.png)
+
+# Possible Datasets
+
+Human Connectome
+
+DeepLesion: https://nihcc.box.com/v/DeepLesion
+
+Paper: https://www.nature.com/articles/sdata201811
+
+BrainWeb: https://brainweb.bic.mni.mcgill.ca/brainweb/selection_ms.html
