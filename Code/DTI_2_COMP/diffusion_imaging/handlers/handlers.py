@@ -26,7 +26,7 @@ class HCPLocalHandler(HandlerBase):
     def __init__(self, config):
         self.config = config
         self.patient_directory = config['patient_directory']
-        self.sub_directory = os.path.join("unprocessed", "3T", "Diffusion")
+        self.sub_directory = os.path.join("T1w", "Diffusion")
         
     def _get_files(self, path):
         
@@ -36,16 +36,10 @@ class HCPLocalHandler(HandlerBase):
         
         filtered = []
         for file in files:
-            if "DWI" in file and not "SBRef" in file:
-                filtered.append(file)
+            if not "eddylogs" in file and not "nodif_brain_mask" in file and not "grad_dev" in file:
+                filtered.append(os.path.join(base, file))
         
-        for key, group in groupby(filtered, lambda x: x.split('_')[2] + x.split('_')[3]):
-            inner_group = []
-            for file in group:
-                inner_group.append(os.path.join(base, file))
-            grouped_file_paths.append(list(inner_group))
-        
-        return grouped_file_paths
+        return filtered
         
     def _load_dwi(self, file):
         image = nib.load(file)
@@ -57,34 +51,26 @@ class HCPLocalHandler(HandlerBase):
     def _load_bval(self, file):
         return np.loadtxt(file)
     
-    def _make_mri(self, group):
-        
-        image = []
-        bvecs = []
-        bvals = []
-        
+    def _make_mri(self, filtered_files):
+
         # The group is the group associated with the specific 'dir*'
         # this includes both LR and RL orientations
-        for file in group:
-            if file.endswith(".nii.gz"):
+        for file in filtered_files:
+            if "data" in file:
                 dwi_data = self._load_dwi(file)
-                image.append(dwi_data.get_data())
+                image = dwi_data.get_data()
                 aff = dwi_data.affine
-            elif file.endswith(".bvec"):
-                bvecs.append(self._load_bvec(file))
-            elif file.endswith(".bval"):
-                bvals.extend(self._load_bval(file))
+            elif "bvecs" in file:
+                bvecs_file_path = file
+            elif "bvals" in file:
+                bvals_file_path = file
         
         # Take the 
-        gtab = gradient_table(bvals, np.concatenate(bvecs, -1))
+        gtab = gradient_table(bvals_file_path, bvecs_file_path)
         
-        nifti_file = nib.Nifti1Image(np.concatenate(image, -1), aff)
-        image = nifti_file.get_data()
+        nifti_image = nib.Nifti1Image(image, aff)
         
-        splitted = file.split("_")
-        year = splitted[3][-2:]
-        orientation = splitted[4]
-        mri = MRI(nifti_file, gtab, year, orientation)
+        mri = MRI(nifti_image, gtab)
         
         return mri
         
@@ -94,13 +80,10 @@ class HCPLocalHandler(HandlerBase):
         for patient in os.listdir(self.patient_directory):
             p = Patient(patient_number=int(patient))
             
-            grouped_files = self._get_files(os.path.join(self.patient_directory,
+            filtered_files = self._get_files(os.path.join(self.patient_directory,
                                                          patient))
-            mris = []
-            for group in grouped_files:
-                mris.append(self._make_mri(group))
             
-            p.mri_list = mris
+            p.mri = self._make_mri(filtered_files)
             patients.append(p)
             
         return patients
