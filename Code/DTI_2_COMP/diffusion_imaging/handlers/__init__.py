@@ -1,7 +1,8 @@
 from .handlers import (
     Handler,
     HCPLocalHandler,
-    HandlerBase
+    HandlerBase,
+    DMIPYLocalHandler
 )
 
 from .containers import (

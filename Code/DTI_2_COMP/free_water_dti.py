@@ -1,4 +1,4 @@
-from diffusion_imaging.handlers import HCPLocalHandler
+from diffusion_imaging.handlers import DMIPYLocalHandler
 from diffusion_imaging.models import FreeWaterTensorModel
 from diffusion_imaging.preprocessing import PreprocessContainer
 from dipy.reconst.shm import CsaOdfModel
@@ -10,33 +10,34 @@ import numpy as np
 import sys
 import os
 
-dwi_file = os.path.join(os.getcwd(), "Diffusion")
+dwi_file = os.path.join(os.path.expanduser("~"), ".cache", 
+			"Python-Eggs", "dmipy-0.1.dev0-py3.7.egg-tmp", 
+			"dmipy", "data", "hcp")
 
 config = {
     'patient_directory': dwi_file
 }
 
-h = HCPLocalHandler(config=config)
+h = DMIPYLocalHandler(config=config)
 patients = h.load()
-masker = Preprocesscontainer.mask()
+masker = PreprocessContainer.mask()
 
 for patient in patients:
-    matient.mri.mask_data, patient.mri.mask = masker.process(patient.mri.data)
+    patient.mri.mask_data, patient.mri.mask = masker.process(patient.mri.data)
     
 for patient in patients:
-    for i, mri in enumerate(patient.mri_list):
-        fwdtimodel = FreeWaterTensorModel(mri.gradient_table)
-        fwdtifit = fwdtimodel.fit(mri.data, mri.mask)
-        patient.mri_list[i].fitted_model = fwdtifit
+    fwdtimodel = FreeWaterTensorModel(patient.mri.gradient_table)
+    fwdtifit = fwdtimodel.fit(patient.mri.data, patient.mri.mask)
+    patient.mri.fitted_model = fwdtifit
 
 dtimodel = dti.TensorModel(gtab)
 dtifit = dtimodel.fit(data, mask=mask)
 
 
-gtab = patients[0].mri_list[0].gradient_table
-data = patients[0].mri_list[0].data
-mask = patients[0].mri_list[0].mask
-fwdtifit = patients[0].mri_list[0].fitted_model
+gtab = patients[0].mri.gradient_table
+data = patients[0].mri.data
+mask = patients[0].mri,mask
+fwdtifit = patients[0].fitted_model
 
 dti_FA = dtifit.fa
 dti_MD = dtifit.md

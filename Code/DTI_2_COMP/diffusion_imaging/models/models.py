@@ -18,6 +18,8 @@ class FreeWaterTensorModel(Model):
     
     def fit(self, data, mask):
         self.model = fwdti.FreeWaterTensorModel(self.gradient_table)
+        print(data.shape)
+        print(mask.shape)
         self.f = self.model.fit(data, mask=mask)
         self.FA = self.f.fa
         self.MD = self.f.md

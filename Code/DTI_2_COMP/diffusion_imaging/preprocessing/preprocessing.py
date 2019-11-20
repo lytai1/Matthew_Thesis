@@ -26,11 +26,11 @@ class Mask(Preprocess):
         maskdata, mask = median_otsu(image, vol_idx=[0, 1], median_radius=4, numpass=2,
                                      autocrop=False, dilate=1)
 
-        #axial_slice = 40
-        #mask_roi = np.zeros(image.shape[:-1], dtype=bool)
-        #mask_roi[:, :, axial_slice] = mask[:, :, axial_slice]
+        axial_slice = 40
+        mask_roi = np.zeros(image.shape, dtype=bool)
+        mask_roi[:, :, axial_slice] = mask[:, :, axial_slice]
         
-        return (maskdata, mask) 
+        return (maskdata, mask_roi) 
     
     def process(self, mri_data):
         

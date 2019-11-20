@@ -17,7 +17,8 @@ class HandlerBase(ABC):
     @abstractmethod
     def load(self):
         pass
-    
+
+   
 class HCPLocalHandler(HandlerBase):
     """
     Class to hanlde the loading of the specific patient files from the Human Connectome Project
@@ -55,15 +56,15 @@ class HCPLocalHandler(HandlerBase):
 
         # The group is the group associated with the specific 'dir*'
         # this includes both LR and RL orientations
-        for file in filtered_files:
-            if "data" in file:
-                dwi_data = self._load_dwi(file)
-                image = dwi_data.get_data()
-                aff = dwi_data.affine
-            elif "bvecs" in file:
+        for file in filtered_files: 
+            if "bvecs" in file:
                 bvecs_file_path = file
             elif "bvals" in file:
                 bvals_file_path = file
+            elif "data" in file:
+                dwi_data = self._load_dwi(file)
+                image = dwi_data.get_data()
+                aff = dwi_data.affine
         
         # Take the 
         gtab = gradient_table(bvals_file_path, bvecs_file_path)
@@ -88,7 +89,23 @@ class HCPLocalHandler(HandlerBase):
             
         return patients
         
+class DMIPYLocalHandler(HCPLocalHandler):
 
+    def __init__(self, config):
+       self.config = config
+       self.patient_directory = config['patient_directory']
+
+    def _get_files(self, path):
+
+        base = os.path.join(self.patient_directory, path)
+        files = os.listdir(base)
+        files_full_dir = []
+        
+        for file in files:
+            files_full_dir.append(os.path.join(self.patient_directory, path, file)) 
+ 
+        return files_full_dir
+ 
 class LocalHandler(HandlerBase):
     """
     Class to handle the loading of local files
