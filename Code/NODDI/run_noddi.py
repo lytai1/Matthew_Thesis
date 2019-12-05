@@ -1,23 +1,21 @@
-from dmipy.signal_models import cylinder_models, gaussian_models
-from dmipy.core.modeling_framework import *
-from dmipy.distributions.distribute_models import SD1WatsonDistributed
 import diffusion_imaging
+from diffusion_imaging.models import NODDIModel
+from dipy.viz import window, actor
 import argparse
 import logging
 import numpy as np 
 import dipy
 import os
+import warnings
+import dill
+from xvfbwrapper import Xvfb
 
+vdisplay = Xvfb()
+
+warnings.filterwarnings("ignore")
+
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-stick = cylinder_models.C1Stick()
-ball = gaussian_models.G1Ball()
-zeppelin = gaussian_models.G2Zeppelin()
-
-watson_dispersed_bundle = SD1WatsonDistributed(models=[stick, zeppelin])
-watson_dispersed_bundle.set_tortuous_parameter('G2Zeppelin_1_lambda_perp', 'C1Stick_1_lambda_par', 'partial_volume_0')
-watson_dispersed_bundle.set_equal_parameter('G2Zeppelin_1_lambda_par', 'C1Stick_1_lambda_par')
-watson_dispersed_bundle.set_fixed_parameter('G2Zeppelin_1_lambda_par', 1.7e-9)
 
 def load_files(path):
 
@@ -32,48 +30,74 @@ def load_files(path):
 
         return patients
 
-def fit_model(patients):
+def fit_model(patients, model_type, middle_slice=False):
 
-        logger.info("Fitting models")
+        switch = {
+            "NODDI": NODDIModel()
+        }
+
         patient = patients[0]
         scheme = patient.mri.scheme
         data = patient.mri.data
-	
-        NODDI_mod = MultiCompartmentModel(models=[ball, watson_dispersed_bundle])
-        NODDI_mod.set_fixed_parameter('G1Ball_1_lambda_iso', 3e-9)
-	
-        NODDI_fit_hcp = NODDI_mod.fit(
-            scheme, data, mask=data[..., 0]>0)
 
-        logger.info("Fitted models")
-        return NODDI_fit_hcp
+        if middle_slice:
+            slice_index = data.shape[1] // 2
+            data = data[:, slice_index : slice_index + 1]
+       
+        picklefile_path = os.path.join(patient.directory,
+                                       patient.patient_number + ".pkl") 
+        if not os.path.exists(picklefile_path): 
+            logger.info("Fitting model")  
+            model = switch[model_type]	
+            fitted_model = model.fit(
+                scheme, data, mask=data[..., 0]>0)
+            
+            fitted_model_filepath = picklefile_path 
+            with open(fitted_model_filepath, "wb") as f:
+                dill.dump(fitted_model, f)
+        else:
+            logger.info("Loading model")
+            print(picklefile_path)
+            with open(picklefile_path, "rb") as f:
+                fitted_model = dill.load(f)
+
+        logger.info("Fitted model")
+        return fitted_model 
 
 def visualize_result(model, image_name):
 
-        sphere = dipy.data.get_sphere('symmetric724').subdivide()
-        fods = model.fod(sphere.verticies, visual_odi_lower_bound=0.08)
-	
+        logger.info("Getting volume")
         affine = np.eye(4)
-        volume_res = fitted_parameters['SD1WatsonDistributed_1_SD1Watson_1_odi']
-        volume_im = dipy.viz.actor.slicer(volume_res[:, 0, :, None],
-                                          interpolation='nearest',
-                                          affine=affine, opacity=0.7)
+        affine[0,3] = -10
+        affine[1,3] = -10
 
-        ren = dipy.viz.window.Renderer()
-        fod_spheres = dipy.viz.actor.odf_slicer(
-                                     fods,
-                                     sphere=sphere,
-                                     scale=0.9,
-                                     norm=False)
-        fod_spheres.display_extent(0, fods.shape[0]-1, 0, fods.shape[1]-1,
-                                   0, fods.shape[2]-1)
-        fod_spheres.RotateX(90)
-        fod_spheres.RotateZ(180)
-        fod_spheres.RotateY(180)
-        ren.add(fod_spheres)
-        ren.add(volume_im)
+        ren = window.Renderer()
+        peaks = model.peaks_cartesian()[:, :, :]
+        
+        volume = model.fitted_parameters['partial_volume_0']
+        print(volume)
+        volume_im = actor.slicer(volume,
+                                 interpolation='nearest',
+                                 affine=affine, opacity=0.7)
+        peaks_intensities = volume[:, :, :, None]
+        
+        peaks_fvtk = actor.peak_slicer(peaks, peaks_intensities,
+                                       affine=affine, opacity=0.7)
+        peaks_fvtk.RotateX(90)
+        peaks_fvtk.RotateZ(180)
+        peaks_fvtk.RotateY(180)
+       
+        logger.info("Rendering image") 
         image_name = image_name + '.png'
-        window.record(ren, size=[700, 700], outpath=image_name)
+        window.add(ren, peaks_fvtk)
+        window.add(ren, volume_im)
+        
+        vdisplay.start()
+        try:
+            window.record(scene=ren, size=[700, 700], out_path=image_name) 
+        finally:
+            vdisplay.stop()
+
         logger.info(f"Rendered image and saved to {os.getcwd()}")
 
 if __name__ == "__main__":
@@ -85,6 +109,6 @@ if __name__ == "__main__":
         args = parser.parse_args()
 
         patients = load_files(args.path)
-        model = fit_model(patients)
+        model = fit_model(patients, model_type="NODDI", middle_slice=True)
         visualize_result(model, args.name)
 

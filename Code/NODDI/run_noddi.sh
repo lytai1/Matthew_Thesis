@@ -1,9 +1,8 @@
 #!/bin/bash
-#SBATCH --ncpus=50
-#SBATCH --time=12:00:00
+#SBATCH --time=24:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=3GB
 
 cd /home/mjones/matthew/THESIS/Code/NODDI
-module purge
-module load dmipy
-python noddi_run.py --path /home/mjones/matthew/data --name adni_noddi
+python run_noddi.py --path /home/mjones/matthew/data --name adni_noddi
 
