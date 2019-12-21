@@ -1,0 +1,5 @@
+['/home/mjones/matthew/data/021_S_2077/021_S_2077.bval', '/home/mjones/matthew/data/021_S_2077/021_S_2077.bvec', '/home/mjones/matthew/data/021_S_2077/021_S_2077.nii.gz']
+Using parallel processing with 28 workers.
+Setup brute2fine optimizer in 3.5808022022247314 seconds
+slurmstepd: error: *** JOB 77234 ON node02 CANCELLED AT 2019-11-22T22:30:00 DUE TO TIME LIMIT ***
+slurmstepd: error: Detected 166 oom-kill event(s) in step 77234.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
