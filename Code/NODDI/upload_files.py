@@ -1,7 +1,10 @@
 from dmipy.hcp_interface import downloader_aws
 import logging
 import argparse
+import os
+from s3_interface import S3Interface
 
+s3 = S3Interface(os.environ['AWS_S3_KEY'], os.environ['AWS_S3_PRIVATE_KEY'], 'cs-sjsu-noddi-patient-files')
 logger = logging.getLogger(__name__)
 
 def make_hcp_interface(public_key, secret_key):
@@ -13,21 +16,31 @@ def make_hcp_interface(public_key, secret_key):
 	return hcp_interface
 
 
-def upload_files(interface, file_path):
+def upload_files(interface, file_path, destination_file_path):
+
+        if interface.upload_files(file_path, destination_file_path):
+            return True
+        else:
+            return False
 
 	
 if __name__ == "__main__":
 	
-	parser = argparse.ArgumentParser(description='Downloader interface')
-	parser.add_argument('subject_id', 'id', type=string, help='the subject id to download the patient')
-	parser.add_argument('get_subjects', type=bool, help='list the available subjects')
+	parser = argparse.ArgumentParser(description='Uploader interface')
+	parser.add_argument('file_path', 'f', type=string, help='the path pointing to the file you wish to upload')
+        parser.add_argument('destination_path', 'd', type=string, help='the path on the s3 bucket you wish to place the file')
+        parser.add_argument('bucket_name', 'b', type=string, help='the bucket name you wish to place the file in')
 
 	args = parser.parse_args()
-	
-	hcp_interface = make_hcp_interface(os.env['HCP_PUBLIC_KEY'], os.env['HCP_PRIVATE_KEY'])
-	if args.get_subjects:
-		get_available_subjects(hcp_interface)
 
+        try:
+            s3 = S3Interface(os.environ['AWS_S3_KEY'],
+                             os.environ['AWS_S3_PRIVATE_KEY'],
+                             args.bucket_name)
+            upload_files(s3, args.file_path, args.destination_path)
+        except:
+            logger.info("failed upload")
 
+        
 		
 	
