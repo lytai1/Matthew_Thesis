@@ -8,9 +8,9 @@ import dipy
 import os
 import warnings
 import dill
-from xvfbwrapper import Xvfb
+# from xvfbwrapper import Xvfb
 
-vdisplay = Xvfb()
+# vdisplay = Xvfb()
 
 warnings.filterwarnings("ignore")
 
@@ -39,10 +39,17 @@ def fit_model(patients, model_type, middle_slice=False):
         patient = patients[0]
         scheme = patient.mri.scheme
         data = patient.mri.data
+        label = patient.mri.label
 
         if middle_slice:
-            slice_index = data.shape[1] // 2
-            data = data[:, slice_index : slice_index + 1]
+            if label == 'hcp':
+                slice_index = data.shape[1] // 2
+                data = data[:, slice_index : slice_index + 1]
+            elif label == 'adni':
+                slice_index = data.shape[1] // 2
+                # adni data's shape is of the shape: (x, y, z, t)
+                # this should return an array of shape: (x, y, z)
+                data = data[:, :, slice_index : slice_index + 1, 0]
        
         picklefile_path = os.path.join(patient.directory,
                                        patient.patient_number + ".pkl") 
@@ -92,13 +99,14 @@ def visualize_result(model, image_name):
         window.add(ren, peaks_fvtk)
         window.add(ren, volume_im)
         
-        vdisplay.start()
-        try:
-            window.record(scene=ren, size=[700, 700], out_path=image_name) 
-        finally:
-            vdisplay.stop()
+        # vdisplay.start()
+        # try:
+        window.record(scene=ren, size=[700, 700], out_path=image_name) 
+        # finally:
+        #    vdisplay.stop()
 
-        logger.info(f"Rendered image and saved to {os.getcwd()}")
+        #cwd = os.getcwd()
+        #logger.info(f"Rendered image and saved to {cwd}")
 
 if __name__ == "__main__":
 
