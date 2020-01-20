@@ -82,7 +82,6 @@ def visualize_result(model, image_name):
         peaks = model.peaks_cartesian()[:, :, :]
         
         volume = model.fitted_parameters['partial_volume_0']
-        print(volume)
         volume_im = actor.slicer(volume,
                                  interpolation='nearest',
                                  affine=affine, opacity=0.7)
@@ -118,5 +117,5 @@ if __name__ == "__main__":
 
         patients = load_files(args.path)
         model = fit_model(patients, model_type="NODDI", middle_slice=True)
-        visualize_result(model, args.name)
+        # visualize_result(model, args.name)
 

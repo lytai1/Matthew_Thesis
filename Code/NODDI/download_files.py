@@ -1,6 +1,7 @@
 from dmipy.hcp_interface import downloader_aws
 import logging
 import argparse
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -27,12 +28,12 @@ def get_available_subjects(interface):
 if __name__ == "__main__":
 	
 	parser = argparse.ArgumentParser(description='Downloader interface')
-	parser.add_argument('subject_id', 'id', type=string, help='the subject id to download the patient')
-	parser.add_argument('get_subjects', type=bool, help='list the available subjects')
+	parser.add_argument('--subject_id', '-id', type=str, help='the subject id to download the patient')
+	parser.add_argument('--get_subjects', type=bool, help='list the available subjects')
 
 	args = parser.parse_args()
 	
-	hcp_interface = make_hcp_interface(os.env['HCP_PUBLIC_KEY'], os.env['HCP_PRIVATE_KEY'])
+	hcp_interface = make_hcp_interface(os.environ['HCP_PUBLIC_KEY'], os.environ['HCP_PRIVATE_KEY'])
 	if args.get_subjects:
 		get_available_subjects(hcp_interface)
 

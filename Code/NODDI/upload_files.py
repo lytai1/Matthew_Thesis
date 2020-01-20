@@ -9,11 +9,11 @@ logger = logging.getLogger(__name__)
 
 def make_hcp_interface(public_key, secret_key):
 
-	hcp_interface = downloader_aws.HCPInterface(
-				your_aws_public_key=public_key,
-				your_aws_private_key=private_key
-			)
-	return hcp_interface
+        hcp_interface = downloader_aws.HCPInterface(
+                                your_aws_public_key=public_key,
+                                your_aws_private_key=private_key
+                        )
+        return hcp_interface
 
 
 def upload_files(interface, file_path, destination_file_path):
@@ -26,12 +26,12 @@ def upload_files(interface, file_path, destination_file_path):
 	
 if __name__ == "__main__":
 	
-	parser = argparse.ArgumentParser(description='Uploader interface')
-	parser.add_argument('file_path', 'f', type=string, help='the path pointing to the file you wish to upload')
-        parser.add_argument('destination_path', 'd', type=string, help='the path on the s3 bucket you wish to place the file')
-        parser.add_argument('bucket_name', 'b', type=string, help='the bucket name you wish to place the file in')
+        parser = argparse.ArgumentParser(description='Uploader interface')
+        parser.add_argument('--file_path', '-f', type=str, help='the path pointing to the file you wish to upload')
+        parser.add_argument('--destination_path', '-d', type=str, help='the path on the s3 bucket you wish to place the file')
+        parser.add_argument('--bucket_name', '-b', type=str, help='the bucket name you wish to place the file in')
 
-	args = parser.parse_args()
+        args = parser.parse_args()
 
         try:
             s3 = S3Interface(os.environ['AWS_S3_KEY'],
