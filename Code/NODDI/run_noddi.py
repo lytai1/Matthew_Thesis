@@ -1,5 +1,5 @@
 import diffusion_imaging
-from diffusion_imaging.models import NODDIModel
+from diffusion_imaging.models import NODDIModel, BallStickModel
 from dipy.viz import window, actor
 import argparse
 import logging
@@ -30,16 +30,18 @@ def load_files(path):
 
         return patients
 
-def fit_model(patients, model_type, middle_slice=False):
+def fit_model(patients, model_type, label, retrain, middle_slice=False):
 
         switch = {
-            "NODDI": NODDIModel()
+            "NODDI": NODDIModel(),
+            "BallStick": BallStickModel()
         }
 
         patient = patients[0]
         scheme = patient.mri.scheme
         data = patient.mri.data
-        label = patient.mri.label
+
+        logger.info(f"Label is {label}")
 
         if middle_slice:
             if label == 'hcp':
@@ -50,12 +52,21 @@ def fit_model(patients, model_type, middle_slice=False):
                 # adni data's shape is of the shape: (x, y, z, t)
                 # this should return an array of shape: (x, y, z)
                 data = data[:, :, slice_index : slice_index + 1, 0]
-       
+            elif label == 'rosen':
+                slice_index = data.shape[2] // 2
+                data = data[:, :, slice_index:slice_index+1, :]
+                logger.info(data.shape)
+        else:
+           logger.info(data.shape)
+ 
         picklefile_path = os.path.join(patient.directory,
                                        patient.patient_number + ".pkl") 
-        if not os.path.exists(picklefile_path): 
+       
+        logger.info(f"The shape of the data is {data.shape}")
+        if not os.path.exists(picklefile_path) or retrain: 
             logger.info("Fitting model")  
             model = switch[model_type]	
+            logger.info(data.shape)
             fitted_model = model.fit(
                 scheme, data, mask=data[..., 0]>0)
             
@@ -112,10 +123,19 @@ if __name__ == "__main__":
         parser = argparse.ArgumentParser(description="Process an mri to build a series of eigenvalues/vectors to detail water diffusion")
         parser.add_argument('--path', metavar='-p', type=str, help="The path to the location of the nii, bvec, and bval files to process")
         parser.add_argument('--name', metavar='-n', type=str, help="The name to save the image by")
-
+        parser.add_argument('--model', metavar='-m', type=int, help="The number corresponding to this list of models: 1 -> NODDI, 2 -> BallStick")
+        parser.add_argument('--label', metavar='-l', type=str, help="The label to use for the data provided. Options: hcp, adni, rosen")
+        parser.add_argument('--retrain', action="store_true", help="Whether or not to retain the model")
         args = parser.parse_args()
 
+        logger.info(args)
         patients = load_files(args.path)
-        model = fit_model(patients, model_type="NODDI", middle_slice=True)
+        if args.model == 1:
+            model = fit_model(patients, label=args.label, model_type="NODDI", middle_slice=False, retrain=args.retrain)
+        elif args.model == 2:
+            model = fit_model(patients, label=args.label, model_type="BallStick", middle_slice=True)
+        else:
+            logger.info("The model selected is not one of the few presented, please add --help to your next run of this program to see the list of models allowed")
+
         # visualize_result(model, args.name)
 
