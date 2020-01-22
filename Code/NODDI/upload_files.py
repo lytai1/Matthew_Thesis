@@ -33,11 +33,14 @@ if __name__ == "__main__":
 
         args = parser.parse_args()
 
+        logger.info(args)
         try:
             s3 = S3Interface(os.environ['AWS_S3_KEY'],
                              os.environ['AWS_S3_PRIVATE_KEY'],
                              args.bucket_name)
-            upload_files(s3, args.file_path, args.destination_path)
+            logger.info("uploading file")
+            if upload_files(s3, args.file_path, args.destination_path):
+                logger.info("upload successful")
         except:
             logger.info("failed upload")
 
