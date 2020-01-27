@@ -1,5 +1,6 @@
 import diffusion_imaging
 from diffusion_imaging.models import NODDIModel, BallStickModel
+from dipy.segment.mask import median_otsu
 from dipy.viz import window, actor
 import argparse
 import logging
@@ -30,7 +31,7 @@ def load_files(path):
 
         return patients
 
-def fit_model(patients, model_type, label, retrain, middle_slice=False):
+def fit_model(patients, model_type, label, retrain, index_range, middle_slice=False):
 
         switch = {
             "NODDI": NODDIModel(),
@@ -55,20 +56,32 @@ def fit_model(patients, model_type, label, retrain, middle_slice=False):
             elif label == 'rosen':
                 slice_index = data.shape[2] // 2
                 data = data[:, :, slice_index:slice_index+1, :]
-                logger.info(data.shape)
+        elif not index_range is None:
+            if label == 'hcp':
+                data = data[:, index_range[0]: index_range[1] + 1]
+            elif label == 'adni':
+                data = data[:, :, index_range[0]:index_range[1], 0]
+            elif label == 'rosen':
+                data = data[:, :, index_range[0]:index_range[1], :]
         else:
            logger.info(data.shape)
  
         picklefile_path = os.path.join(patient.directory,
                                        patient.patient_number + ".pkl") 
-       
+        
+        padding = 3 
+        #data = data[52-padding:199+padding, 24-padding:222+padding, :, :] 
+         
+        b0_slice = data[:, :, :, 0]
+        b0_mask, mask = median_otsu(b0_slice)
+ 
         logger.info(f"The shape of the data is {data.shape}")
         if not os.path.exists(picklefile_path) or retrain: 
             logger.info("Fitting model")  
             model = switch[model_type]	
             logger.info(data.shape)
             fitted_model = model.fit(
-                scheme, data, mask=data[..., 0]>0)
+                scheme, data, mask=mask)
             
             fitted_model_filepath = picklefile_path 
             with open(fitted_model_filepath, "wb") as f:
@@ -126,15 +139,26 @@ if __name__ == "__main__":
         parser.add_argument('--model', metavar='-m', type=int, help="The number corresponding to this list of models: 1 -> NODDI, 2 -> BallStick")
         parser.add_argument('--label', metavar='-l', type=str, help="The label to use for the data provided. Options: hcp, adni, rosen")
         parser.add_argument('--retrain', action="store_true", help="Whether or not to retain the model")
+        parser.add_argument('--index_range', metavar='-ir', type=int, nargs='+', help="Specify the index range for the image to be generated, input is two integers i.e. 1 5 indicating the range from 1 to before 5")
+        parser.add_argument('--middle_slice', action="store_true", help="Whether or not to use the middle slice of the image")
         args = parser.parse_args()
 
         logger.info(args)
+        if len(args.index_range) != 2:
+            raise Exception
+
+        if args.middle_slice is True and not args.index_range is None:
+            raise Exception("Please specify either the middle_slice or the index_range. These two options conflict")
+
+        model_type = {
+            1: "NODDI",
+            2: "BallStick"
+        }
+ 
         patients = load_files(args.path)
-        if args.model == 1:
-            model = fit_model(patients, label=args.label, model_type="NODDI", middle_slice=False, retrain=args.retrain)
-        elif args.model == 2:
-            model = fit_model(patients, label=args.label, model_type="BallStick", middle_slice=True)
-        else:
+        try:
+            model = fit_model(patients, label=args.label, model_type=model_type[args.model], index_range=args.index_range, middle_slice=args.middle_slice, retrain=args.retrain)
+        except KeyError:
             logger.info("The model selected is not one of the few presented, please add --help to your next run of this program to see the list of models allowed")
 
         # visualize_result(model, args.name)

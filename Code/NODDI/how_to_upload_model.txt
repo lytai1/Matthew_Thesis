@@ -1,0 +1,1 @@
+python -i s3interface_init.py; path = os.path.join(os.environ['data_dir'], ...); s3.s3_client.upload_file(path, 'cs-sjsu-noddi-patient-files', name of file)

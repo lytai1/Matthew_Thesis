@@ -72,7 +72,7 @@ if __name__ == "__main__":
     result = Results(model)
 
     path, name = os.path.split(args.path)
-    patient_num = os.path.splitext(name)
+    patient_num, ext = os.path.splitext(name)
     results_path = os.path.join(path, patient_num+"_result.pkl") 
         
     print("Saving result class to file")
