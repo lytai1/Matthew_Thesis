@@ -1,5 +1,6 @@
 import diffusion_imaging
 from diffusion_imaging.models import NODDIModel, BallStickModel
+from diffusion_imaging.handlers import LocalHandler
 from dipy.segment.mask import median_otsu
 from dipy.viz import window, actor
 import argparse
@@ -18,56 +19,34 @@ warnings.filterwarnings("ignore")
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def load_files(path):
+def load_files(path, label):
 
-        config = {
-                "patient_directory": path
-        }
-	
-        logger.info("Loading patients")
-        h = diffusion_imaging.handlers.DMIPYLocalHandler(config=config)
-        patients = h.load()
-        logger.info("Patients loaded")
+        logger.info("Loading patient")
+        h = LocalHandler(path, label)
+        patient = h.load()
+        logger.info("Patient loaded")
 
-        return patients
+        return patient
 
-def fit_model(patients, model_type, label, retrain, index_range, middle_slice=False):
+def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=True):
 
         switch = {
             "NODDI": NODDIModel(),
             "BallStick": BallStickModel()
         }
 
-        patient = patients[0]
         scheme = patient.mri.scheme
         data = patient.mri.data
 
         logger.info(f"Label is {label}")
-
-        if middle_slice:
-            if label == 'hcp':
-                slice_index = data.shape[1] // 2
-                data = data[:, slice_index : slice_index + 1]
-            elif label == 'adni':
-                slice_index = data.shape[1] // 2
-                # adni data's shape is of the shape: (x, y, z, t)
-                # this should return an array of shape: (x, y, z)
-                data = data[:, :, slice_index : slice_index + 1, 0]
-            elif label == 'rosen':
-                slice_index = data.shape[2] // 2
-                data = data[:, :, slice_index:slice_index+1, :]
-        elif not index_range is None:
-            if label == 'hcp':
-                data = data[:, index_range[0]: index_range[1] + 1]
-            elif label == 'adni':
-                data = data[:, :, index_range[0]:index_range[1], 0]
-            elif label == 'rosen':
-                data = data[:, :, index_range[0]:index_range[1], :]
-        else:
-           logger.info(data.shape)
- 
-        picklefile_path = os.path.join(patient.directory,
-                                       patient.patient_number + ".pkl") 
+        if len(index_range) == 2:
+            data = patient.mri.pull_axial_slices(index_range[0], index_range[1])
+            picklefile_path = os.path.join(patient.directory, 
+                                           patient.patient_number + f"_{index_range[0]} - {index_range[1]}.pkl") 
+        elif middle_slice:
+            data = patient.mri.pull_middle_slice()
+            picklefile_path = os.path.join(patient.directory,
+                                           patient.patient_number + ".pkl")
         
         padding = 3 
         #data = data[52-padding:199+padding, 24-padding:222+padding, :, :] 
@@ -77,9 +56,10 @@ def fit_model(patients, model_type, label, retrain, index_range, middle_slice=Fa
  
         logger.info(f"The shape of the data is {data.shape}")
         if not os.path.exists(picklefile_path) or retrain: 
+             
             logger.info("Fitting model")  
             model = switch[model_type]	
-            logger.info(data.shape)
+            
             fitted_model = model.fit(
                 scheme, data, mask=mask)
             
@@ -155,7 +135,7 @@ if __name__ == "__main__":
             2: "BallStick"
         }
  
-        patients = load_files(args.path)
+        patients = load_files(args.path, args.label)
         try:
             model = fit_model(patients, label=args.label, model_type=model_type[args.model], index_range=args.index_range, middle_slice=args.middle_slice, retrain=args.retrain)
         except KeyError:
