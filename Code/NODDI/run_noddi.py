@@ -42,7 +42,7 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
         if len(index_range) == 2:
             data = patient.mri.pull_axial_slices(index_range[0], index_range[1])
             picklefile_path = os.path.join(patient.directory, 
-                                           patient.patient_number + f"_{index_range[0]} - {index_range[1]}.pkl") 
+                                           patient.patient_number + f"_{index_range[0]}-{index_range[1]}.pkl") 
         elif middle_slice:
             data = patient.mri.pull_middle_slice()
             picklefile_path = os.path.join(patient.directory,
