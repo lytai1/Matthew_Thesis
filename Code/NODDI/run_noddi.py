@@ -1,6 +1,6 @@
 import diffusion_imaging
 from diffusion_imaging.models import NODDIModel, BallStickModel
-from diffusion_imaging.handlers import LocalHandler
+from diffusion_imaging.handlers import make_handler
 from dipy.segment.mask import median_otsu
 from dipy.viz import window, actor
 import argparse
