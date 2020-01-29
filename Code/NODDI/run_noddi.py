@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def load_files(path, label):
 
         logger.info("Loading patient")
-        h = LocalHandler(path, label)
+        h = make_handler(path, label)
         patient = h.load()
         logger.info("Patient loaded")
 
@@ -39,12 +39,15 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
         data = patient.mri.data
 
         logger.info(f"Label is {label}")
-        if len(index_range) == 2:
+        if not index_range is None and len(index_range) == 2:
             data = patient.mri.pull_axial_slices(index_range[0], index_range[1])
             picklefile_path = os.path.join(patient.directory, 
                                            patient.patient_number + f"_{index_range[0]}-{index_range[1]}.pkl") 
         elif middle_slice:
             data = patient.mri.pull_middle_slice()
+            picklefile_path = os.path.join(patient.directory,
+                                           patient.patient_number + ".pkl")
+        else:
             picklefile_path = os.path.join(patient.directory,
                                            patient.patient_number + ".pkl")
         
@@ -123,9 +126,9 @@ if __name__ == "__main__":
         parser.add_argument('--middle_slice', action="store_true", help="Whether or not to use the middle slice of the image")
         args = parser.parse_args()
 
-        logger.info(args)
-        if len(args.index_range) != 2:
-            raise Exception
+        print(args)
+        #if len(args.index_range) != 2:
+        #    raise Exception
 
         if args.middle_slice is True and not args.index_range is None:
             raise Exception("Please specify either the middle_slice or the index_range. These two options conflict")
