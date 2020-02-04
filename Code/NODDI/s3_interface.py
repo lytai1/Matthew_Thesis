@@ -63,16 +63,21 @@ class S3Interface:
 	
 		try:
 			logging.info(f"Downloading files")
+			print(f"object name = {object_name}")
+			print(f"bucket name = {self.bucket_name}")
 			object_list = self.s3_client.list_objects(Bucket=self.bucket_name, Prefix=object_name)['Contents']
+			print(object_list)
 			for obj_dict in object_list:
-				print(obj_dict)
-				key = obj_dict['Key']
-				logging.info(f"Downloading {key}")
-				self.transfer.download_file(self.bucket_name, key,
-								os.path.join(destination_file_name,
-										os.path.basename(obj_dict['Key'])
-								)
-				)
+				if "size" in obj_dict.keys():
+					print(obj_dict)
+					key = obj_dict['Key']
+					print(f"base name = {os.path.basename(key)}")
+					logging.info(f"Downloading {key}")
+					self.transfer.download_file(self.bucket_name, key,
+									os.path.join(destination_file_name,
+											os.path.basename(obj_dict['Key'])
+									)
+					)
 		except ClientError as e:
 			logging.error(e)
 			return False
