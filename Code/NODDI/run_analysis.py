@@ -23,5 +23,7 @@ if __name__ == "__main__":
     num_slices = patient.mri.data.shape[2]
     slice_list = [(x, x + 20) for x in range(0 , num_slices, NUM_SLICES_PER_RUN)]
     for s in slice_list:
-        print(s)
-
+        start, end = s
+        if end > num_slices:
+            end = num_slices
+        subprocess.POpen('sbatch python -c "import time; time.sleep(30)"')
