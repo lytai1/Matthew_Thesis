@@ -78,42 +78,6 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
         logger.info("Fitted model")
         return fitted_model 
 
-def visualize_result(model, image_name):
-
-        logger.info("Getting volume")
-        affine = np.eye(4)
-        affine[0,3] = -10
-        affine[1,3] = -10
-
-        ren = window.Renderer()
-        peaks = model.peaks_cartesian()[:, :, :]
-        
-        volume = model.fitted_parameters['partial_volume_0']
-        volume_im = actor.slicer(volume,
-                                 interpolation='nearest',
-                                 affine=affine, opacity=0.7)
-        peaks_intensities = volume[:, :, :, None]
-        
-        peaks_fvtk = actor.peak_slicer(peaks, peaks_intensities,
-                                       affine=affine, opacity=0.7)
-        peaks_fvtk.RotateX(90)
-        peaks_fvtk.RotateZ(180)
-        peaks_fvtk.RotateY(180)
-       
-        logger.info("Rendering image") 
-        image_name = image_name + '.png'
-        window.add(ren, peaks_fvtk)
-        window.add(ren, volume_im)
-        
-        # vdisplay.start()
-        # try:
-        window.record(scene=ren, size=[700, 700], out_path=image_name) 
-        # finally:
-        #    vdisplay.stop()
-
-        #cwd = os.getcwd()
-        #logger.info(f"Rendered image and saved to {cwd}")
-
 if __name__ == "__main__":
 
         parser = argparse.ArgumentParser(description="Process an mri to build a series of eigenvalues/vectors to detail water diffusion")
