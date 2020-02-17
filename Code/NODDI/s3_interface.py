@@ -68,7 +68,7 @@ class S3Interface:
 			object_list = self.s3_client.list_objects(Bucket=self.bucket_name, Prefix=object_name)['Contents']
 			print(object_list)
 			for obj_dict in object_list:
-				if "size" in obj_dict.keys():
+				if obj_dict['Size'] != 0:
 					print(obj_dict)
 					key = obj_dict['Key']
 					print(f"base name = {os.path.basename(key)}")
