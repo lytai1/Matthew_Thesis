@@ -21,28 +21,45 @@ done
 T1_DIR=$(dirname "${T1_PATH}")
 DTI_DIR=$(dirname "${DTI_PATH}")
 
-REORIENT_FILE_EXT="_or.nii.gz"
-REF_FILE_EXT="_refMNI152.nii.gz"
+NII_FILE_EXT=".nii.gz"
+REORIENT_FILE_EXT="_or${NII_FILE_EXT}"
+SEG_FILE_EXT="_brain${NII_FILE_EXT}"
+REF_FILE_EXT="_refMNI152${NII_FILE_EXT}"
+CORRECTION_FILE_EXT="_correction${NII_FILE_EXT}"
 MAT_FILE_EXT="_refMNI152.mat"
 
 T1_OR_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REORIENT_FILE_EXT}"
-DTI_OR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REORIENT_FILE_EXT}"
-
 T1_REF_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REF_FILE_EXT}"
-DTI_REF_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI_${REF_FILE_EXT}"
-
-
 T1_MAT_PATH="${T1_DIR}/${PATIENT_NUM}${MAT_FILE_EXT}"
 
+DTI_OR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REORIENT_FILE_EXT}"
+DTI_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${SEG_FILE_EXT}"
+DTI_REF_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REF_FILE_EXT}"
+DTI_CORR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${CORRECTION_FILE_EXT}"
 
-echo "Orienting T1 to standard space"
-fslreorient2std $T1_PATH $T1_OR_PATH
+#echo "Orienting T1 to standard space"
+#fslreorient2std $T1_PATH $T1_OR_PATH
 
+## This step makes certain that the patients data is in the correct orientation
 echo "Orienting DTI to standard space"
 fslreorient2std $DTI_PATH $DTI_OR_PATH
 
-echo "Running flirt on the T1 with a reference to the 2mm MNI reference"
-flirt -in $T1_OR_PATH -ref $REF_PATH -out $T1_REF_PATH -omat $T1_MAT_PATH
+## This step runs the segmentation protocol
+echo "Running BET to remove extra material with options -R -B -F"
+echo "-R being the option for robust (run multiple iterations)"
+echo "-B being extract eyes"
+echo "-F being run on all volumes (4D file)"
+bet $DTI_OR_PATH $DTI_SEG_PATH -R -B -F
 
-echo "Running flirt on the DTI with a reference to the 2mm MNI reference using the Matrix generated from the previous step as an initialization"
-flirt -in $DTI_OR_PATH -ref $REF_PATH -out $DTI_REF_PATH -applyxfm -init $T1_MAT_PATH -interp trilinear
+## This step runs the movement correction on the patient data
+echo "Running Eddy correction to compensate for patient movement"
+eddy_correct $DTI_SEG_PATH $DTI_CORR_PATH trilinear
+
+#echo "Running flirt on the T1 with a reference to the 2mm MNI reference"
+#flirt -in $T1_OR_PATH -ref $REF_PATH -out $T1_REF_PATH -omat $T1_MAT_PATH
+
+## This is the step that registers the patients scans into a known template space for use in extracting specific regions later
+echo "Running flirt on the DTI with a reference to the 2mm MNI template."
+flirt -in $DTI_CORR_PATH -ref $REF_PATH -out $DTI_REF_PATH 
+
+echo "The resulting file can be found here: ${DTI_REF_PATH}"
