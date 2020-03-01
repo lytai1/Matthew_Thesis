@@ -1,0 +1,14 @@
+Inorder to run an analysis using the NODDI algorithm we must have a number of things:
+1. The DTI of a patient. This includes: 
+   a. a .nii.gz file containing the diffusion tensor image
+   b. a bvec file containing the unit vectors of each specific run 
+   c. a bval file containing the magnitude of each run
+2. The standard template file. This can be found from FSL's flirt module files. This can be found under the 'template_dir' environment variable.
+3. The run_analysis.sh file
+
+To run the analysis we use the following command:
+
+bash run_analysis.sh -d /path/to/the/patient.nii(.gz) -t /path/to/the/patient_T1.nii(.gz) -r /path/to/the/reference/file.nii(.gz) -p patient_num
+
+This will open up a new job this is run by slurm. The output of the file should be a print out of the job number generated for the run
+

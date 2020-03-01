@@ -1,3 +1,9 @@
+"""This file contains the required logic to run the noddi anaylsis on a given patient
+
+In order to run this file use the following commandline arguments
+python run_noddi.py --
+
+"""
 import diffusion_imaging
 from diffusion_imaging.models import NODDIModel, BallStickModel
 from diffusion_imaging.handlers import make_handler
