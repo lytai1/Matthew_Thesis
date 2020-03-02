@@ -30,6 +30,7 @@ SEG_FILE_EXT="_brain${NII_FILE_EXT}"
 REF_FILE_EXT="_refMNI152${NII_FILE_EXT}"
 CORRECTION_FILE_EXT="_correction${NII_FILE_EXT}"
 MAT_FILE_EXT="_refMNI152.mat"
+REG_FILE_EXT="_reg${NII_FILE_EXT}"
 
 T1_OR_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REORIENT_FILE_EXT}"
 T1_REF_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REF_FILE_EXT}"
@@ -39,6 +40,7 @@ DTI_OR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REORIENT_FILE_EXT}"
 DTI_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${SEG_FILE_EXT}"
 DTI_REF_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REF_FILE_EXT}"
 DTI_CORR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${CORRECTION_FILE_EXT}"
+DTI_REG_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REG_FILE_EXT}"
 
 RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}" 
 
@@ -69,21 +71,22 @@ eddy_correct $DTI_SEG_PATH $DTI_CORR_PATH trilinear
 
 ## This is the step that registers the patients scans into a known template space for use in extracting specific regions later
 echo "Running flirt on the DTI with a reference to the 2mm MNI template."
-flirt -in $DTI_CORR_PATH -ref $REF_PATH -out $DTI_REF_PATH 
+flirt -in $DTI_CORR_PATH -ref $REF_PATH -omat "${DTI_DIR}/${PATIENT_NUM}.mat"
+flirt -in $DTI_CORR_PATH -ref $REF_PATH -out $DTI_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}.mat"
 
 ## generating binary mask of registered data
 echo "Generating binary mask from registered data"
-bet $DTI_REF_PATH "${DTI_DIR}/${PATIENT_NUM}_brain${NII_FILE_EXT}" -m -F
+bet $DTI_REG_PATH "${DTI_DIR}/${PATIENT_NUM}_brain${NII_FILE_EXT}" -m -F
 
-echo "The resulting file can be found here: ${DTI_REF_PATH}"
+echo "The resulting file can be found here: ${DTI_REG_PATH}"
 
 echo "Preparing the directory for the patient run"
 mkdir -p $RESULTS_DIR
-cp $DTI_REF_PATH "${RESULTS_DIR}/${PATIENT_NUM}${NII_FILE_EXT}"
+cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}${NII_FILE_EXT}"
 cp "${T1_DIR}/${PATIENT_NUM}.bval" "${RESULTS_DIR}/${PATIENT_NUM}.bval"
 cp "${T1_DIR}/${PATIENT_NUM}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}.bvec"
 cp "${DTI_DIR}/${PATIENT_NUM}_brain_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
 
 echo "Running NODDI analysis"
-#python run_noddi.py --path $RESULTS_DIR --model 1 --label adni --retrain
+python run_noddi.py --path $RESULTS_DIR --model 1 --label adni --retrain
 EOT
