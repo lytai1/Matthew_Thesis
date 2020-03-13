@@ -30,6 +30,8 @@ def load_files(path, label):
         logger.info("Loading patient")
         h = make_handler(path, label)
         patient = h.load()
+        patient.directory = path
+
         logger.info("Patient loaded")
 
         return patient
@@ -75,6 +77,11 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
             fitted_model_filepath = picklefile_path 
             with open(fitted_model_filepath, "wb") as f:
                 dill.dump(fitted_model, f)
+
+            odi = fitted_model.fitted_parameters['SD1WatsonDistributed_1_SD1Watson_1_odi']
+            im = nib.Nift1Image(odi, patient.mri.nifti_image.affine)
+            result_path = os.path.join(patient.directory, "odi.nii.gz")
+            nib.save(im, result_path)
         else:
             logger.info("Loading model")
             print(picklefile_path)
