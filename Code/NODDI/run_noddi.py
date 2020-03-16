@@ -9,6 +9,7 @@ from diffusion_imaging.models import NODDIModel, BallStickModel
 from diffusion_imaging.handlers import make_handler
 from dipy.segment.mask import median_otsu
 from dipy.viz import window, actor
+import nibabel as nib
 import argparse
 import logging
 import numpy as np 
@@ -36,6 +37,14 @@ def load_files(path, label):
 
         return patient
 
+
+def save_odi_image(fitted_model, patient):
+
+       odi = fitted_model.fitted_parameters['SD1WatsonDistributed_1_SD1Watson_1_odi']
+       im = nib.Nift1Image(odi, patient.mri.nifti_image.affine)
+       result_path = os.path.join(patient.directory, "odi.nii.gz")
+       nib.save(im, result_path)
+ 
 def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=True):
 
         switch = {
@@ -45,6 +54,7 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
 
         scheme = patient.mri.scheme
         data = patient.mri.data
+        mask = patient.mri.mask
 
         logger.info(f"Label is {label}")
         if not index_range is None and len(index_range) == 2:
@@ -59,11 +69,6 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
             picklefile_path = os.path.join(patient.directory,
                                            patient.patient_number + ".pkl")
         
-        padding = 3 
-        #data = data[52-padding:199+padding, 24-padding:222+padding, :, :] 
-         
-        b0_slice = data[:, :, :, 0]
-        b0_mask, mask = median_otsu(b0_slice)
  
         logger.info(f"The shape of the data is {data.shape}")
         if not os.path.exists(picklefile_path) or retrain: 
@@ -78,15 +83,13 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
             with open(fitted_model_filepath, "wb") as f:
                 dill.dump(fitted_model, f)
 
-            odi = fitted_model.fitted_parameters['SD1WatsonDistributed_1_SD1Watson_1_odi']
-            im = nib.Nift1Image(odi, patient.mri.nifti_image.affine)
-            result_path = os.path.join(patient.directory, "odi.nii.gz")
-            nib.save(im, result_path)
         else:
             logger.info("Loading model")
             print(picklefile_path)
             with open(picklefile_path, "rb") as f:
                 fitted_model = dill.load(f)
+        
+        save_odi_image(fitted_model, patient)             
 
         logger.info("Fitted model")
         return fitted_model 
