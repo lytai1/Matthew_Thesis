@@ -46,7 +46,7 @@ then
 fi
 
 echo "Running NODDI analysis"
-python run_noddi.py --path $RESULTS_DIR --model 1 --label adni --retrain
+python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
 
 ## Segment the white matter via the T1
 fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"

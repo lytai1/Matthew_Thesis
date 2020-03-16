@@ -38,11 +38,11 @@ def load_files(path, label):
         return patient
 
 
-def save_odi_image(fitted_model, patient):
+def save_odi_image(fitted_model, patient, name="odi.nii.gz"):
 
        odi = fitted_model.fitted_parameters['SD1WatsonDistributed_1_SD1Watson_1_odi']
-       im = nib.Nift1Image(odi, patient.mri.nifti_image.affine)
-       result_path = os.path.join(patient.directory, "odi.nii.gz")
+       im = nib.Nifti1Image(odi, patient.mri.nifti_image.affine)
+       result_path = os.path.join(patient.directory, name)
        nib.save(im, result_path)
  
 def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=True):
