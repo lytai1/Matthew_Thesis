@@ -10,17 +10,24 @@ Sample run script:
 sbatch run_analysis.sh -t some/path/to/patient#_T1.nii.gz -d some/path/to/patient#.nii.gz -r some/path/to/avg152.nii.gz -p ###_S_####
 DOCS
 
-while getopts t:d:r:p: option
-do
-case "${option}"
-in 
-t) T1_PATH=${OPTARG};;
-d) DTI_PATH=${OPTARG};;
-r) REF_PATH=${OPTARG};;
-p) PATIENT_NUM=${OPTARG};;
-*) INVALID_ARGS=${OPTARG};;
-esac
+while getopts 'tdrp' flag; do
+   case "${flag}" in
+      t) T1_PATH="${OPTARG}" ;;
+      d) DTI_PATH=${OPTARG};;
+      r) REF_PATH=${OPTARG};;
+      p) PATIENT_NUM=${OPTARG};;
+      *) INVALID_ARGS=${OPTARG};;
+   esac
 done
+
+#while getopts t:d:r:p: option
+#do
+#case "${option}"
+#in 
+#t) T1_PATH=${OPTARG};;
+#sac
+#done
+
 
 ORIGINAL_DIR=$PWD
 T1_DIR=$(dirname "${T1_PATH}")
@@ -60,6 +67,7 @@ sbatch <<EOT
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20GB
 
+set -ex
 ## This step makes certain that the patients data is in the correct orientation
 echo "Orienting DTI to standard space"
 [[ ! -f $DTI_OR_PATH ]] && fslreorient2std $DTI_PATH $DTI_OR_PATH
@@ -114,7 +122,7 @@ cp "${T1_DIR}/${PATIENT_NUM}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}.bvec"
 cp "${DTI_DIR}/${PATIENT_NUM}_brain_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
 
 echo "Running NODDI analysis"
-python run_noddi.py --path $RESULTS_DIR --model 1 --label adni --retrain
+python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
 
 ## Segment the white matter via the T1
 fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
@@ -130,7 +138,7 @@ if [ ! -f "${LEFT_CINGULUM_HIPPO_PATH} ]; then
 	mv "${TRACTS_PATH}/vol0007.nii.gz" "${RIGHT_CINGULUM_HIPPO_PATH}"
 	cd $ORIGINAL_DIR	
 fi
-## Segment the left cingulum hippocampal region
+# Segment the left cingulum hippocampal region
 fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/odi_left_cingulum_hippo.nii.gz"
 
 ## Segment the right cingulum hiipocampal region
