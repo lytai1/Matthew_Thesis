@@ -24,6 +24,7 @@ REG_FILE_EXT="_reg${NII_FILE_EXT}"
 
 T1_OR_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REORIENT_FILE_EXT}"
 T1_REF_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REF_FILE_EXT}"
+T1_REG_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REG_FILE_EXT}"
 T1_MAT_PATH="${T1_DIR}/${PATIENT_NUM}${MAT_FILE_EXT}"
 T1_SEG_PATH="${T1_DIR}/${PATIENT_NUM}${SEG_FILE_EXT}"
 
@@ -48,21 +49,24 @@ echo "-F being run on all volumes (4D file)"
 bet $DTI_OR_PATH $DTI_SEG_PATH -R -B -F
 bet $T1_OR_PATH $T1_SEG_PATH -R -B -F
 
-## Segment the T1 brain into 3 categories for use in the resulting noddi image
-mkdir -p "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION"
-fast -n 3 -o "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}" ${T1_SEG_PATH}
-
 ## This step runs the movement correction on the patient data
 echo "Running Eddy correction to compensate for patient movement"
 eddy_correct $DTI_SEG_PATH $DTI_CORR_PATH trilinear
 
 #echo "Running flirt on the T1 with a reference to the 2mm MNI reference"
-#flirt -in $T1_OR_PATH -ref $REF_PATH -out $T1_REF_PATH -omat $T1_MAT_PATH
+
+echo "Running flirt on the T1 with a reference to the 2mm MNI template."
+flirt -in ${T1_SEG_PATH} -ref $REF_PATH -omat "${T1_DIR}/${PATIENT_NUM}_T1.mat"
+flirt -in $T1_SEG_PATH -ref $REF_PATH -out $T1_REG_PATH -applyxfm -init "${T1_DIR}/${PATIENT_NUM}_T1.mat"
 
 ## This is the step that registers the patients scans into a known template space for use in extracting specific regions later
 echo "Running flirt on the DTI with a reference to the 2mm MNI template."
 flirt -in $DTI_CORR_PATH -ref $REF_PATH -omat "${DTI_DIR}/${PATIENT_NUM}.mat"
 flirt -in $DTI_CORR_PATH -ref $REF_PATH -out $DTI_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}.mat"
+
+## Segment the T1 brain into 3 categories for use in the resulting noddi image
+mkdir -p "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION"
+fast -n 3 -o "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}" ${T1_SEG_PATH}
 
 ## generating binary mask of registered data
 echo "Generating binary mask from registered data"
