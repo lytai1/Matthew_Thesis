@@ -46,8 +46,8 @@ REG_FILE_EXT="_reg${NII_FILE_EXT}"
 T1_OR_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REORIENT_FILE_EXT}"
 T1_REF_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REF_FILE_EXT}"
 T1_REG_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REG_FILE_EXT}"
-T1_MAT_PATH="${T1_DIR}/${PATIENT_NUM}${MAT_FILE_EXT}"
-T1_SEG_PATH="${T1_DIR}/${PATIENT_NUM}${SEG_FILE_EXT}"
+T1_MAT_PATH="${T1_DIR}/${PATIENT_NUM}_T1${MAT_FILE_EXT}"
+T1_SEG_PATH="${T1_DIR}/${PATIENT_NUM}_T1${SEG_FILE_EXT}"
 
 DTI_OR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REORIENT_FILE_EXT}"
 DTI_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${SEG_FILE_EXT}"
@@ -67,10 +67,10 @@ sbatch <<EOT
 #SBATCH --time=24:00:00
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20GB
+#SBATCH --job-name=$PATIENT_NUM
 
 set -e
 ## These two steps make certain that the patients data is in the correct orientation
-echo "Orienting DTI to standard space"
 if [[ ! -f $DTI_OR_PATH ]]; then
   echo "Orienting DTI to standard space"
   fslreorient2std $DTI_PATH $DTI_OR_PATH
@@ -95,7 +95,9 @@ if [[ ! -f "${DTI_CORR_PATH}" ]]; then
   eddy_correct $DTI_SEG_PATH $DTI_CORR_PATH trilinear
 fi
 
-if [[ ! -f "${T1_SEG_PATH}" ]]; then
+echo $T1_SEG_PATH
+echo "We're just before we call flirt"
+if [[ ! -f "${T1_REG_PATH}" ]]; then
   echo "Running flirt on the T1 with a reference to the 2mm MNI reference"
   flirt -in $T1_SEG_PATH -ref $REF_PATH -omat "${T1_DIR}/${PATIENT_NUM}_T1.mat"
   flirt -in $T1_SEG_PATH -ref $REF_PATH -out $T1_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}_T1.mat"
@@ -109,9 +111,9 @@ if [[ ! -f "${DTI_REG_PATH}" ]]; then
 fi
 
 ## generating binary mask of registered data
-if [[ ! -f "${DTI_DIR}/${PATIENT_NUM}_brain${NII_FILE_EXT}" ]]; then
+if [[ ! -f "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" ]]; then
   echo "Generating binary mask from registered data"
-  bet $DTI_REG_PATH "${DTI_DIR}/${PATIENT_NUM}_brain${NII_FILE_EXT}" -m -F
+  bet $DTI_REG_PATH "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" -m -F
 fi
 
 ## Segment the T1 brain into 3 categories for use in the resulting noddi image
@@ -127,7 +129,7 @@ mkdir -p $RESULTS_DIR
 cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}${NII_FILE_EXT}"
 cp "${T1_DIR}/${PATIENT_NUM}.bval" "${RESULTS_DIR}/${PATIENT_NUM}.bval"
 cp "${T1_DIR}/${PATIENT_NUM}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}.bvec"
-cp "${DTI_DIR}/${PATIENT_NUM}_brain_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
+cp "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
 
 echo "Running NODDI analysis"
 python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
