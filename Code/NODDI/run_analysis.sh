@@ -151,9 +151,12 @@ if [[ ! -f "${LEFT_CINGULUM_HIPPO_PATH}" ]]; then
 fi
 # Segment the left cingulum hippocampal region
 echo "Segmenting the left cingulum hippocampal region using the white matter segmented odi values"
-fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/odi_left_cingulum_hippo.nii.gz"
+fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz"
 
 ## Segment the right cingulum hiipocampal region
 echo "Segmenting the right cingulum hippocampal region using the white matter segmented odi values"
-fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${RIGHT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/odi_right_cingulum_hippo.nii.gz"
+fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${RIGHT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_right_cingulum_hippo.nii.gz"
+
+## Insert the generated statistics from the tract
+python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNIMERGE_RESULTS.csv"
 EOT
