@@ -69,13 +69,16 @@ class S3Interface:
 			print(object_list)
 			for obj_dict in object_list:
 				if obj_dict['Size'] != 0:
+					path_to, filename = os.path.split(obj_dict['Key'])
+					_, one_up = os.path.split(path_to)
+					os.makedirs(os.path.join(destination_file_name, one_up), exist_ok=True)
 					print(obj_dict)
 					key = obj_dict['Key']
 					print(f"base name = {os.path.basename(key)}")
 					logging.info(f"Downloading {key}")
 					self.transfer.download_file(self.bucket_name, key,
 									os.path.join(destination_file_name,
-											os.path.basename(obj_dict['Key'])
+											os.path.join(one_up, filename)
 									)
 					)
 		except ClientError as e:

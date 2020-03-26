@@ -54,7 +54,6 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
 
         scheme = patient.mri.scheme
         data = patient.mri.data
-        mask = patient.mri.mask
 
         logger.info(f"Label is {label}")
         if not index_range is None and len(index_range) == 2:
@@ -68,7 +67,10 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
         else:
             picklefile_path = os.path.join(patient.directory,
                                            patient.patient_number + ".pkl")
-        
+       
+        b0_slice = data[:, :, :, 0]
+        b0_mask, mask = median_otsu(b0_slice) 
+        logger.info(f"Mask shape = {mask.shape}")
  
         logger.info(f"The shape of the data is {data.shape}")
         if not os.path.exists(picklefile_path) or retrain: 
