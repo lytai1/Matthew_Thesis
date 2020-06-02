@@ -22,10 +22,15 @@ def load_image(path):
 
 
 def pull_patient_meta_data(path):
+    """The patient_id and the viscode is obtained through the use of the directory structure
+    ../patient_id/viscode/file.file -> patient_id = patient_id and viscode = viscode
+    """
     base_path, file_name = os.path.split(path)
-    base_path, viscode = os.path.split(base_path)
     base_path, patient_id = os.path.split(base_path)
+    base_path, viscode = os.path.split(base_path)
 
+    if viscode in patient_id:
+        patient_id = '_'.join(patient_id.split('_')[0:-1])
     return (patient_id, viscode)
 
 

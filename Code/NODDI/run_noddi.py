@@ -71,7 +71,8 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
         b0_slice = data[:, :, :, 0]
         b0_mask, mask = median_otsu(b0_slice) 
         logger.info(f"Mask shape = {mask.shape}")
- 
+
+        logger.info(f"Picklefile path = {picklefile_path}") 
         logger.info(f"The shape of the data is {data.shape}")
         if not os.path.exists(picklefile_path) or retrain: 
              
