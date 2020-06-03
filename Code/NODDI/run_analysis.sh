@@ -60,7 +60,7 @@ RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}"
 WHITE_MATTER_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}/WHITE_MATTER_SEGMENTATION" 
 TRACTS_PATH="${data_dir}/tracts"
 LEFT_CINGULUM_HIPPO_PATH="${TRACTS_PATH}/left_cingulum_hippo.nii.gz"
-RIGHT_CINGULUM_HIPPO_PATH="${TRACTS_PATH}/right_cingulum_hippo.nii.gz"
+LEFT_CORTICOSPINAL_PATH="${TRACTS_PATH}/left_corticospinal.nii.gz"
 
 sbatch <<EOT
 #!/bin/bash
@@ -139,26 +139,29 @@ echo "Masking the odi values generated with the white matter segmentation from t
 fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
 ## Check to see if the tract has been generated
-if [[ ! -f "${LEFT_CINGULUM_HIPPO_PATH}" ]]; then
-        echo "No tract volumes were found. Preparing the JHU-ICBM tract segmentations"
+if [[ ! -f "${LEFT_CINGULUM_HIPPO_PATH}" || ! -f "${LEFT_CORTICOSPINAL_PATH}"]]; then 
+	echo "No tract volumes were found. Preparing the JHU-ICBM tract segmentations"
 	# split the JHU-ICBM-tracts file
         mkdir -p $TRACTS_PATH
 	cd $TRACTS_PATH
 	fslsplit "${FSLDIR}/data/atlases/JHU/JHU-ICBM-tracts-prob-2mm.nii.gz"
-	# rename the 6th volume to left_cingulum_hippo.nii.gz
-	# rename the 7th volume to right_cingulum_hippo.nii.gz
+	# rename the volumes related to the left cingulum hippocampal and the left corticospinal tracts
 	mv "${TRACTS_PATH}/vol0006.nii.gz" "${LEFT_CINGULUM_HIPPO_PATH}"
-	mv "${TRACTS_PATH}/vol0007.nii.gz" "${RIGHT_CINGULUM_HIPPO_PATH}"
+	mv "${TRACTS_PATH}/vol0002.nii.gz" "${LEFT_CORTICOSPINAL_PATH}"
 	cd $ORIGINAL_DIR	
 fi
+
 # Segment the left cingulum hippocampal region
 echo "Segmenting the left cingulum hippocampal region using the white matter segmented odi values"
 fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz"
 
-## Segment the right cingulum hiipocampal region
+# Segment the left corticospinal region
 echo "Segmenting the right cingulum hippocampal region using the white matter segmented odi values"
-fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${RIGHT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_right_cingulum_hippo.nii.gz"
+fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CORTICOSPINAL_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz"
 
 ## Insert the generated statistics from the tract
-python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNIMERGE_RESULTS.csv"
+python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNIMERGE_RESULTS.csv" --label "left_cingulum_hippo"
+
+## Insert the generated statistics from the left corticospinal tract 
+python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz" --save_to "${adni_dir}/INFO/ADNIMERGE_RESULTS.csv" --label "left_corticospinal"
 EOT
