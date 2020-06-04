@@ -23,8 +23,5 @@ The image format used
 DIPY - Diffusion Tensor Imaging:
 Read the scan into python and compute the diffusivity, mean anisotropy and RGB of the data
 
-The process is depicted below:
-![diffusion calculation](Documentation/diffusion_tensor_imaging_process.png)
-
 # Dataset Used
 ADNI: Alzheimer's Disease Neuroimaging Initiative
