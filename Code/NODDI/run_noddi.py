@@ -26,6 +26,7 @@ warnings.filterwarnings("ignore")
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def load_files(path, label):
 
         logger.info("Loading patient")
@@ -44,8 +45,16 @@ def save_odi_image(fitted_model, patient, name="odi.nii.gz"):
        im = nib.Nifti1Image(odi, patient.mri.nifti_image.affine)
        result_path = os.path.join(patient.directory, name)
        nib.save(im, result_path)
- 
+
+
 def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=True):
+
+        picklefile_path = os.path.join(patient.directory,
+                                       patient.patient_number + ".pkl")
+
+        if os.path.exists(picklefile_path) and not retrain:
+            logger.info("Model has already been generated and the --retrain flag has not been set.")
+            return None
 
         switch = {
             "NODDI": NODDIModel(),
@@ -96,6 +105,7 @@ def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=
 
         logger.info("Fitted model")
         return fitted_model 
+
 
 if __name__ == "__main__":
 

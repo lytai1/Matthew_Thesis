@@ -35,13 +35,10 @@ def pull_patient_meta_data(path):
 
 
 # Generate Statistics function
-def generate_statistics(image):
+def generate_statistics(image, label):
     masked = np.ma.array(image, mask=0)
     stats_dict = {
-        "ODI_sum": masked.sum(),
-        "ODI_avg": masked.mean(),
-        "ODI_std": masked.std(),
-        "ODI_var": masked.var()
+        f"{label}_ODI_avg": masked.mean()
     }
     return stats_dict
 
@@ -77,7 +74,7 @@ def insert_stats(stats: dict, viscode: str, ptid: str, dataframe: pd.DataFrame) 
 
 
 # Main function
-def post_process_run(path, adni_merge_path=None):
+def post_process_run(path, adni_merge_path=None, label=None):
     """This function acts as the main function for the stat generation part of this program.
 
     Args:
@@ -93,7 +90,7 @@ def post_process_run(path, adni_merge_path=None):
     adni_merge = load_adni_merge(adni_merge_path)
     odi_image = load_image(path)
     patient_id, viscode = pull_patient_meta_data(path)
-    odi_stats = generate_statistics(odi_image)
+    odi_stats = generate_statistics(odi_image, label)
     result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
 
     return result
@@ -108,8 +105,12 @@ if __name__ == "__main__":
     parser.add_argument('--save_to', metavar='-st', type=str, help="The path to the csv file to insert the information "
                                                                    "to. This is assumed to be a copy of the "
                                                                    "ADNIMERGE.csv file named ADNIMERGE_RESULTS.csv")
+    parser.add_argument('--label', metavar='-l', type=str, help="The label for the specific mask insert. " 
+                                                                "(i.e. left_corticospinal or left_cingulum_hippo). "
+                                                                "This will dictate the prepended value in the csv file "
+                                                                "generated")
 
     args = parser.parse_args()
 
-    results = post_process_run(args.path, args.save_to)
+    results = post_process_run(args.path, args.save_to, args.label)
     results.to_csv(args.save_to)
