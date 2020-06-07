@@ -49,13 +49,6 @@ def save_odi_image(fitted_model, patient, name="odi.nii.gz"):
 
 def fit_model(patient, model_type, label, retrain, index_range=[], middle_slice=True):
 
-        picklefile_path = os.path.join(patient.directory,
-                                       patient.patient_number + ".pkl")
-
-        if os.path.exists(picklefile_path) and not retrain:
-            logger.info("Model has already been generated and the --retrain flag has not been set.")
-            return None
-
         switch = {
             "NODDI": NODDIModel(),
             "BallStick": BallStickModel()
@@ -120,8 +113,6 @@ if __name__ == "__main__":
         args = parser.parse_args()
 
         print(args)
-        #if len(args.index_range) != 2:
-        #    raise Exception
 
         if args.middle_slice is True and not args.index_range is None:
             raise Exception("Please specify either the middle_slice or the index_range. These two options conflict")
@@ -130,12 +121,21 @@ if __name__ == "__main__":
             1: "NODDI",
             2: "BallStick"
         }
- 
-        patients = load_files(args.path, args.label)
-        try:
-            model = fit_model(patients, label=args.label, model_type=model_type[args.model], index_range=args.index_range, middle_slice=args.middle_slice, retrain=args.retrain)
-        except KeyError:
-            logger.info("The model selected is not one of the few presented, please add --help to your next run of this program to see the list of models allowed")
 
-        # visualize_result(model, args.name)
+        _, patient_number_and_label = os.path.split(args.path)
+        pickle_file_name = patient_number_and_label + ".pkl"
+        target_directory = os.path.join(args.path,
+                                        pickle_file_name)
+        logger.info(target_directory)
+        if not os.path.exists(target_directory) or args.retrain:
+
+            patients = load_files(args.path, args.label)
+            try:
+                model = fit_model(patients, label=args.label, model_type=model_type[args.model],
+                                  index_range=args.index_range, middle_slice=args.middle_slice, retrain=args.retrain)
+            except KeyError:
+                logger.info("The model selected is not one of the few presented, please add --help to your next run of "
+                            "this program to see the list of models allowed")
+        else:
+            logger.info("Model has already been generated and the retrain flag has not been set")
 
