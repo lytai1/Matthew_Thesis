@@ -124,12 +124,14 @@ fi
 
 echo "The resulting file can be found here: ${DTI_REG_PATH}"
 
-echo "Preparing the directory for the patient run"
-mkdir -p $RESULTS_DIR
-cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}${NII_FILE_EXT}"
-cp "${T1_DIR}/${PATIENT_NUM}.bval" "${RESULTS_DIR}/${PATIENT_NUM}.bval"
-cp "${T1_DIR}/${PATIENT_NUM}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}.bvec"
-cp "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
+if [[ ! -d $RESULTS_DIR ]]; then
+	echo "Preparing the directory for the patient run"
+	mkdir -p $RESULTS_DIR
+	cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}${NII_FILE_EXT}"
+	cp "${T1_DIR}/${PATIENT_NUM}.bval" "${RESULTS_DIR}/${PATIENT_NUM}.bval"
+	cp "${T1_DIR}/${PATIENT_NUM}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}.bvec"
+	cp "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
+fi 
 
 echo "Running NODDI analysis"
 python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
@@ -139,7 +141,7 @@ echo "Masking the odi values generated with the white matter segmentation from t
 fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
 ## Check to see if the tract has been generated
-if [[ ! -f "${LEFT_CINGULUM_HIPPO_PATH}" || ! -f "${LEFT_CORTICOSPINAL_PATH}"]]; then 
+if [[ ! -f "${LEFT_CINGULUM_HIPPO_PATH}" || ! -f "${LEFT_CORTICOSPINAL_PATH}" ]]; then 
 	echo "No tract volumes were found. Preparing the JHU-ICBM tract segmentations"
 	# split the JHU-ICBM-tracts file
         mkdir -p $TRACTS_PATH
@@ -156,10 +158,12 @@ echo "Segmenting the left cingulum hippocampal region using the white matter seg
 fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz"
 
 # Segment the left corticospinal region
-echo "Segmenting the right cingulum hippocampal region using the white matter segmented odi values"
+echo "Segmenting the left corticospinal region using the white matter segmented odi values"
 fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CORTICOSPINAL_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz"
 
-## Insert the generated statistics from the tract
+echo "Inserting the data in to the csv file found here: ${adni_dir}/INFO/ADNIMERGE_RESULTS.csv"
+
+## Insert the generated statistics from the left cingulum hippocampal tract
 python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNIMERGE_RESULTS.csv" --label "left_cingulum_hippo"
 
 ## Insert the generated statistics from the left corticospinal tract 

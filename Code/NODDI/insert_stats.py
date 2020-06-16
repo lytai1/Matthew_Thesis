@@ -101,16 +101,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Takes the resulting data generated from the segmented tract and "
                                                  "inserts it into a common csv file")
     parser.add_argument('--path', metavar='-p', type=str, help="The path to the location of the nii file generated from"
-                                                               " the tract segmentation")
+                                                               " the tract segmentation", 
+                        required=True)
     parser.add_argument('--save_to', metavar='-st', type=str, help="The path to the csv file to insert the information "
                                                                    "to. This is assumed to be a copy of the "
-                                                                   "ADNIMERGE.csv file named ADNIMERGE_RESULTS.csv")
+                                                                   "ADNIMERGE.csv file named ADNIMERGE_RESULTS.csv",
+                        required=True)
     parser.add_argument('--label', metavar='-l', type=str, help="The label for the specific mask insert. " 
                                                                 "(i.e. left_corticospinal or left_cingulum_hippo). "
                                                                 "This will dictate the prepended value in the csv file "
-                                                                "generated")
-
+                                                                "generated",
+                        required=True)
     args = parser.parse_args()
+    print(args)
+    print(args.label)
+    print(type(args.label))
 
     results = post_process_run(args.path, args.save_to, args.label)
-    results.to_csv(args.save_to)
+    results.to_csv(args.save_to, index=False)
