@@ -257,15 +257,15 @@ python format_files.py --path /home/ltai/mci_di/data_before_process/ADNI/
 
 
 if __name__ == "__main__":
-    description = """Convert DCM files downloaded from ADNI database to NIfTI format. /n
+    description = """Convert DCM files downloaded from ADNI database to NIfTI format. \n
     
                     Directory will also converted to patient_number/viscode/NIfTI_files/n
                     
-                    There are three NIfTI files, include '.bval', '.bvec', '.nii'./n
+                    There are three NIfTI files, include '.bval', '.bvec', '.nii'.\n
                     """
-    help = """--path The path to directory containing all of the patients/n
+    help = """--path The path to directory containing all of the patients\n
     
-            example command:/n
+            example command:\n
 
             python format_files.py --path /home/ltai/mci_di/data_before_process/ADNI/
 
