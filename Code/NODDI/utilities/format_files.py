@@ -10,6 +10,7 @@ import subprocess
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+#image descriptions from ADNI
 LOOK_FOR_THESE_FILES = ["Axial_DTI", "Sagittal_3D_Accelerated_MPRAGE", "Accelerated_Sagittal_MPRAGE",
                         "Accelerated_Sag_IR-FSPRGR"]
 
@@ -18,9 +19,9 @@ class DCM2NIIConverter:
 
     def convert_directory(self, source_dir, output_dir, compression=True):
         if compression:
-            subprocess.call(["dcm2nii", "-o", str(output_dir), str(source_dir)])
+            subprocess.call(["dcm2niix", "-o", str(output_dir), str(source_dir)])
         else:
-            subprocess.call(["dcm2nii", "-g", "n", "-o", str(output_dir), str(source_dir)])
+            subprocess.call(["dcm2niix", "-z", "n", "-o", str(output_dir), str(source_dir)])
 
 
 class DICOM2NIFTIService:
@@ -65,7 +66,6 @@ class Formatter:
         self.full_path = os.path.join(self.path, self.directory)
 
     def rename_all(self, target_files, postfix):
-
         for viscode, date_folder_path in zip(self.viscodes, self.folders):
 
             output_dir = os.path.join(self.path, viscode)
@@ -80,6 +80,7 @@ class Formatter:
     def rename(self, path_to_file, patient_id, viscode, postfix):
 
         named_to = return_rename_name(path_to_file, patient_id, viscode, postfix)
+        logger.info("rename " + path_to_file + " to " + named_to)
         try:
             os.rename(path_to_file, named_to)
         except (FileNotFoundError, FileExistsError):
@@ -118,15 +119,21 @@ class Formatter:
 
 
 class DTIFormatter(Formatter):
-
+    #converter_service: DCM2NIIService
+    #path: directory until patient number
+    #viscodes: list of viscodes
+    #folders: list of date folders in the directory
+    #patient_id: patient id
+    #directory: directory unit type of image (e.g. Axial_DTI)
     def __init__(self, converter_service, path, viscodes, folders, patient_id, directory):
         super(DTIFormatter, self).__init__(converter_service=converter_service, path=path, viscodes=viscodes,
                                            folders=folders, patient_id=patient_id, directory=directory)
         self.required_file_extensions = [".bval", ".bvec", ".nii"]
-        self.target_files = ["AxialDTI", "ADNI3"]
+        self.target_files = ["Axial_DTI", "ADNI3"]
 
     def run(self):
         self.format()
+        logger.info("rename all for DTI")
         self.rename_all(self.target_files, postfix="")
         if not self.verify(self.required_file_extensions):
             raise Exception("The verification failed")
@@ -147,38 +154,6 @@ class T1Formatter(Formatter):
             raise Exception("The verification failed")
 
 
-
-def get_all_files_in_directory(abs_path):
-
-    # get the visitation codes from the directory of dates
-    folders = []
-    for date_folder in os.listdir(abs_path):
-        folders.append(os.path.join(abs_path, date_folder))
-
-    return folders
-
-def build_formatter(path, directory, patient_id, converter):
-
-    full_path = os.path.join(path, directory)
-    viscodes = get_viscodes(full_path)
-    folders = get_all_files_in_directory(full_path)
-    make_directories(viscodes, path)
-
-    service = DCM2NIIService(converter)
-    if all("Axial" in file for file in folders):
-        return DTIFormatter(service, path, viscodes, folders, patient_id, directory)
-    elif all("Sag" in file for file in folders):
-        return T1Formatter(service, path, viscodes, folders, patient_id, directory)
-
-
-def make_directories(viscodes, directory):
-    for viscode in viscodes:
-        viscode_path = os.path.join(directory, viscode)
-        if not os.path.exists(viscode_path):
-            logger.info(f"Made directory: {viscode_path}")
-            os.makedirs(os.path.join(directory, viscode))
-
-
 def get_directory_of_dcm_files(path):
     if path.endswith(".dcm"):
         p = Path(path)
@@ -197,6 +172,26 @@ def return_rename_name(path_to_file, patient_id, viscode, postfix=""):
     named_to = os.path.join(parent, patient_id + "_" + viscode + postfix + extension)
     return named_to
 
+#make new directories based on viscode
+def make_directories(viscodes, directory):
+    for viscode in viscodes:
+        viscode_path = os.path.join(directory, viscode)
+        if not os.path.exists(viscode_path):
+            logger.info(f"Made directory: {viscode_path}")
+            os.makedirs(os.path.join(directory, viscode))
+
+
+#get all file names in the folder
+def get_all_files_in_directory(abs_path):
+
+    # get the visitation codes from the directory of dates
+    folders = []
+    for date_folder in os.listdir(abs_path):
+        folders.append(os.path.join(abs_path, date_folder))
+
+    return folders
+
+#change date in folder name to viscode (e.g. bl, m12, m24, etc)
 def get_viscodes(path):
     viscodes = ["bl", "m12", "m24", "m36", "m48", "m60", "m72"]
     files = os.listdir(path)
@@ -220,23 +215,65 @@ def get_viscodes(path):
 
     return out
 
+#build DTIFromatter for Axial DTI
+#build T1Formatter for Accelerated_Sagittal_MPRAGE
+#path: directory up to patient number
+#directory: directory up to type of image (e.g. Axial_DTI)
+#patient_id: patient id
+#converter: DCM2NIIConverter
+def build_formatter(path, directory, patient_id, converter):
+    full_path = os.path.join(path, directory)
+    viscodes = get_viscodes(full_path) #list of viscodes (e.g. bl, m12, etc)
+    folders = get_all_files_in_directory(full_path) #list of date folders
+    make_directories(viscodes, path)
+
+    service = DCM2NIIService(converter)
+    if all("Axial" in file for file in folders):
+        return DTIFormatter(service, path, viscodes, folders, patient_id, directory)
+    elif all("Sag" in file for file in folders):
+        return T1Formatter(service, path, viscodes, folders, patient_id, directory)
 
 def format_directory(path, patient_id):
-
     for directory in os.listdir(path):
-
         if directory in LOOK_FOR_THESE_FILES:
-
             formatter = build_formatter(path, directory, patient_id, converter=DCM2NIIConverter())
             formatter.run()
+"""
+Description:
+    Convert DCM files downloaded from ADNI database to NIfTI format.
+    
+    Directory will also converted to patient_number/viscode/NIfTI_files
+    
+    There are three NIfTI files, include '.bval', '.bvec', '.nii'
+Help:
+
+    --path The path to directory containing all of the patients
+    
+example command:
+
+python format_files.py --path /home/ltai/mci_di/data_before_process/ADNI/
+
+"""
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Formatting ADNI files to the format of the project")
-    parser.add_argument('--path', metavar='-p', type=str, help="The path to directory containing all of the patients")
+    description = """Convert DCM files downloaded from ADNI database to NIfTI format. /n
+    
+                    Directory will also converted to patient_number/viscode/NIfTI_files/n
+                    
+                    There are three NIfTI files, include '.bval', '.bvec', '.nii'./n
+                    """
+    help = """--path The path to directory containing all of the patients/n
+    
+            example command:/n
+
+            python format_files.py --path /home/ltai/mci_di/data_before_process/ADNI/
+
+            """
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('--path', metavar='-p', type=str, help=help)
     args = parser.parse_args()
 
-    for patient in os.listdir(args.path):
-        full_path = os.path.join(args.path, patient)
-
-        format_directory(full_path, patient)
+    for patient_id in os.listdir(args.path):
+        full_path = os.path.join(args.path, patient_id)
+        format_directory(full_path, patient_id)
