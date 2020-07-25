@@ -124,14 +124,14 @@ fi
 
 echo "The resulting file can be found here: ${DTI_REG_PATH}"
 
-if [[ ! -d $RESULTS_DIR ]]; then
-	echo "Preparing the directory for the patient run"
-	mkdir -p $RESULTS_DIR
-	cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}${NII_FILE_EXT}"
-	cp "${T1_DIR}/${PATIENT_NUM}.bval" "${RESULTS_DIR}/${PATIENT_NUM}.bval"
-	cp "${T1_DIR}/${PATIENT_NUM}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}.bvec"
-	cp "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
-fi 
+
+echo "Preparing the directory for the patient run"
+mkdir -p $RESULTS_DIR
+cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}${NII_FILE_EXT}"
+cp "${T1_DIR}/${PATIENT_NUM}.bval" "${RESULTS_DIR}/${PATIENT_NUM}.bval"
+cp "${T1_DIR}/${PATIENT_NUM}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}.bvec"
+cp "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
+
 
 echo "Running NODDI analysis"
 python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
