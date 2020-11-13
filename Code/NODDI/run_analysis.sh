@@ -71,6 +71,7 @@ sbatch <<EOT
 
 set -e
 ## These two steps make certain that the patients data is in the correct orientation
+## Just rotating the images (in (multiple) 90 degrees), make sure it is not flip
 if [[ ! -f $DTI_OR_PATH ]]; then
   echo "Orienting DTI to standard space"
   fslreorient2std $DTI_PATH $DTI_OR_PATH
@@ -82,6 +83,7 @@ if [[ ! -f $T1_OR_PATH ]]; then
 fi
 
 ## This step runs the segmentation protocol
+## extract the brain
 echo "Running BET to remove extra material with options -R -B -F"
 echo "-R being the option for robust (run multiple iterations)"
 echo "-B being extract eyes"
@@ -90,6 +92,8 @@ echo "-F being run on all volumes (4D file)"
 [[ ! -f $T1_SEG_PATH ]] && bet $T1_OR_PATH $T1_SEG_PATH -R -B -F
 
 ## This step runs the movement correction on the patient data
+## only in DTI because multiple "DTI" are taken with different gradient
+## check for other movement correction method (eddy)
 if [[ ! -f "${DTI_CORR_PATH}" ]]; then
   echo "Running Eddy correction to compensate for patient movement"
   eddy_correct $DTI_SEG_PATH $DTI_CORR_PATH trilinear
@@ -97,10 +101,15 @@ fi
 
 echo $T1_SEG_PATH
 echo "We're just before we call flirt"
+
+## linear registration (rotate, translate, resizing, skew) (coregistration)
+## first line saving transformation matrix 
+## second line applying transformation to T1 images
+## check line 112  "DTI_DIR" or "T1"?
 if [[ ! -f "${T1_REG_PATH}" ]]; then
   echo "Running flirt on the T1 with a reference to the 2mm MNI reference"
   flirt -in $T1_SEG_PATH -ref $REF_PATH -omat "${T1_DIR}/${PATIENT_NUM}_T1.mat"
-  flirt -in $T1_SEG_PATH -ref $REF_PATH -out $T1_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}_T1.mat"
+  flirt -in $T1_SEG_PATH -ref $REF_PATH -out $T1_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}_T1.mat" ## check this!!!
 fi
 
 ## This is the step that registers the patients scans into a known template space for use in extracting specific regions later
@@ -116,7 +125,10 @@ if [[ ! -f "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" ]]; then
   bet $DTI_REG_PATH "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" -m -F
 fi
 
-## Segment the T1 brain into 3 categories for use in the resulting noddi image
+## Segment the T1 brain into 3 categories for use in the resulting noddi image 
+## might only save the white matter one
+## white matter, grey matter and CSF
+## partial voxel approximation
 if [[ ! -f "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_pve_2.nii.gz" ]]; then
   mkdir -p "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION"
   fast -n 3 -o "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}" ${T1_REG_PATH}
@@ -137,10 +149,12 @@ echo "Running NODDI analysis"
 python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
 
 ## Segment the white matter via the T1
+## ignore everything that is not white matter
 echo "Masking the odi values generated with the white matter segmentation from the patients T1"
 fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
 ## Check to see if the tract has been generated
+## split the tracts in one file to individual ones
 if [[ ! -f "${LEFT_CINGULUM_HIPPO_PATH}" || ! -f "${LEFT_CORTICOSPINAL_PATH}" ]]; then 
 	echo "No tract volumes were found. Preparing the JHU-ICBM tract segmentations"
 	# split the JHU-ICBM-tracts file
