@@ -74,9 +74,9 @@ def insert_stats(stats: dict, viscode: str, ptid: str, dataframe: pd.DataFrame) 
         idx = dataframe.loc[mask].index.values[0]
         dataframe.at[idx, key] = value
         '''
-        dataframe.loc[(ptid, viscode), str(key)] = value
+        dataframe.loc[(ptid, viscode), key] = value
             
-        print(dataframe.loc[mask, key])
+        print(dataframe.loc[(ptid, viscode), key])
 
     return dataframe
 
