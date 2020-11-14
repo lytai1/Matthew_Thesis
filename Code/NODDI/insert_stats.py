@@ -48,7 +48,8 @@ def load_adni_merge(path):
     try:
         adni_merged = pd.read_csv(path, index_col=["PTID", "VISCODE"])
     except FileNotFoundError:
-        adni_merged = pd.DataFrame(index=["PTID", "VISCODE"])
+        my_index = pd.MultiIndex.from_tuples([], names=("PTID", "VISCODE"))
+        adni_merged = pd.DataFrame(index=my_index)
     return adni_merged
 
 
