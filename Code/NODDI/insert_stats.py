@@ -126,4 +126,4 @@ if __name__ == "__main__":
     print(type(args.label))
 
     results = post_process_run(args.path, args.save_to, args.label)
-    results.to_csv(args.save_to, index=False)
+    results.to_csv(args.save_to)

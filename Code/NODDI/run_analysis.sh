@@ -177,6 +177,10 @@ fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CORTICOSPINAL_PATH}"
 
 echo "Inserting the data in to the csv file found here: ${adni_dir}/INFO/ADNIMERGE_RESULTS.csv"
 
+if[[ ! -f "${adni_dir}/INFO/"]]; then
+  mkdir -p "${adni_dir}/INFO/"
+fi
+
 ## Insert the generated statistics from the left cingulum hippocampal tract
 python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_cingulum_hippo"
 
