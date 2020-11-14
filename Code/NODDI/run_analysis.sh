@@ -177,7 +177,7 @@ fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CORTICOSPINAL_PATH}"
 
 echo "Inserting the data in to the csv file found here: ${adni_dir}/INFO/ADNIMERGE_RESULTS.csv"
 
-if[[ ! -f "${adni_dir}/INFO/" ]]; then 
+if [[ ! -f "${adni_dir}/INFO/" ]]; then
   mkdir -p "${adni_dir}/INFO/"
 fi
 
