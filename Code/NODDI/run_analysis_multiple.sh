@@ -14,7 +14,7 @@ IFS=','
 [ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
 while read s_id viscode
 do
-	echo "s_id : $flname"
+	echo "s_id : $s_id"
 	echo "viscode : $viscode"
 
 done < $INPUT
