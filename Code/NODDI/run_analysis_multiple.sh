@@ -4,11 +4,11 @@
 # ------------------------------------------
 
 
-export adni_dir="/home/ltai/mci_di/andi3_data/ad/ADNI"  
-export data_dir="/home/ltai/mci_di/andi3_data/ad/" 
+export adni_dir="/home/ltai/mci_di/andi3_data/cn/ADNI"  
+export data_dir="/home/ltai/mci_di/andi3_data/cn/" 
 export mni_dir="/home/ltai/fsl/data/standard"
 
-INPUT=/home/ltai/mci_di/andi3_data/ad/adni3_ad_list.csv
+INPUT=/home/ltai/mci_di/andi3_data/cn/adni3_cn_list.csv
 OLDIFS=$IFS
 IFS=','
 [ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
