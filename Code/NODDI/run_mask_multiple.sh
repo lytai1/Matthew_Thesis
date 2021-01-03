@@ -19,7 +19,7 @@ do
 	echo "run noddi of"
 	echo "s_id : $s_id"
 	echo "viscode : $viscode"
-	bash run_mask.sh -d ${ADNI_DIR} -p ${PATIENT_NO} -v ${VISCODE} -m mask_name -n m_id -f ${FSL_DIR}
+	bash run_mask.sh -d ${ADNI_DIR} -p ${PATIENT_NO} -v ${VISCODE} -m ${mask_name} -n ${m_id} -f ${FSL_DIR}
 
 done < $INPUT
 IFS=$OLDIFS
