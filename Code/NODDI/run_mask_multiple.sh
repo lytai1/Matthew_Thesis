@@ -6,20 +6,25 @@
 
 ADNI_DIR="/home/ltai/mci_di/andi3_data/test/ADNI"
 FSL_DIR="/home/ltai/fsl"
-PATIENT_NO="003_S_6264"
-VISCODE="bl"
+INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/test/adni3_test_list.csv"
+INPUT_JHU_LIST=/home/ltai/mci_di/andi3_data/test/jhu_mask_list.csv
 
-INPUT=/home/ltai/mci_di/andi3_data/test/jhu_mask_list.csv
-OLDIFS=$IFS
+OLDIFS1=$IFS
 IFS=','
-
-[ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
-while read m_id mask_name
+[ ! -f $INPUT_PATIENT_LIST ] && { echo "$INPUT_JHU_LIST file not found"; exit 99; }
+while read patient_no viscode
 do
-	echo "run noddi of"
-	echo "s_id : $s_id"
-	echo "viscode : $viscode"
-	bash run_mask.sh -d ${ADNI_DIR} -p ${PATIENT_NO} -v ${VISCODE} -m ${mask_name} -n ${m_id} -f ${FSL_DIR}
+	OLDIFS2=$IFS
+	IFS=','
+	[ ! -f $INPUT_JHU_LIST ] && { echo "$INPUT_JHU_LIST file not found"; exit 99; }
+	while read m_id mask_name
+	do
+		bash run_mask.sh -d ${ADNI_DIR} -p ${patient_no} -v ${viscode} -m ${mask_name} -n ${m_id} -f ${FSL_DIR}
+	done < $INPUT_JHU_LIST
+	IFS=$OLDIFS2
 
-done < $INPUT
-IFS=$OLDIFS
+done < $INPUT_PATIENT_LIST
+IFS=$OLDIFS1
+
+
+
