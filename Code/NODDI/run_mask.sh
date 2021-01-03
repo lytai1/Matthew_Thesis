@@ -39,7 +39,7 @@ MASK_PATH="${TRACTS_PATH}/${MASK}.nii.gz"
 ## Segment the white matter via the T1
 ## ignore everything that is not white matter
 echo "Masking the odi values generated with the white matter segmentation from the patients T1"
-fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
+fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
 
 ## Check to see if the tract has been generated
@@ -63,7 +63,7 @@ fi
 
 # Segment the mask region
 echo "Segmenting the ${MASK} region using the white matter segmented odi values"
-fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${MASK_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_${MASK}.nii.gz"
+fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${MASK_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}_odi_${MASK}.nii.gz"
 
 echo "Inserting the data in to the csv file found here: ${ADNI_DIR}/INFO/ADNI_ODI_RESULTS.csv"
 
@@ -72,4 +72,4 @@ if [[ ! -f "${ADNI_DIR}/INFO/" ]]; then
 fi
 
 ## Insert the generated statistics from the left corticospinal tract 
-python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_${MASK}.nii.gz" --save_to "${ADNI_DIR}/INFO/ADNI_ODI_RESULTS.csv" --label "${MASK}"
+python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}_odi_${MASK}.nii.gz" --save_to "${ADNI_DIR}/INFO/ADNI_ODI_RESULTS.csv" --label "${MASK}"
