@@ -10,8 +10,7 @@ options:
    -r The reference standard template to register against
    -p The patient number to use as the name
 
-Sample run script:
-batch run_mask.sh -d /home/ltai/mci_di/data_test/ADNI -p 003_S_6264 -v bl -m anterior_thalamic_radiation_l -n 0000 -f /home/ltai/fsl
+bash run_mask.sh -d /home/ltai/mci_di/data_test/ADNI -p 003_S_6264 -v bl -m anterior_thalamic_radiation_l -n 0000 -f /home/ltai/fsl
 DOCS
 
 while getopts d:p:v:m:n:f: option
@@ -29,9 +28,9 @@ done
 
 ORIGINAL_DIR=$PWD
 
-PATIENT_DIR="${ADNI_DIR}/${PATIENT_NUM}/${VISCODE}/"
-RESULTS_DIR="${PATIENT_DIR}/${PATIENT_NUM}/"
-WHITE_MATTER_SEG_PATH="${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/" 
+PATIENT_DIR="${ADNI_DIR}/${PATIENT_NUM}/${VISCODE}"
+RESULTS_DIR="${PATIENT_DIR}/${PATIENT_NUM}"
+WHITE_MATTER_SEG_PATH="${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION" 
 
 TRACTS_PATH="$(dirname "${ADNI_DIR}")/tracts"
 MASK_PATH="${TRACTS_PATH}/$(MASK).nii.gz"
