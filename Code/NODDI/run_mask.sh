@@ -33,7 +33,7 @@ RESULTS_DIR="${PATIENT_DIR}/${PATIENT_NUM}"
 WHITE_MATTER_SEG_PATH="${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION" 
 
 TRACTS_PATH="$(dirname "${ADNI_DIR}")/tracts"
-MASK_PATH="${TRACTS_PATH}/$(MASK).nii.gz"
+MASK_PATH="${TRACTS_PATH}/${MASK}.nii.gz"
 
 
 ## Segment the white matter via the T1
