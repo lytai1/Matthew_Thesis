@@ -14,7 +14,7 @@ Sample run script:
 batch run_mask.sh -d /home/ltai/mci_di/data_test/ADNI -p 003_S_6264 -v bl -m anterior_thalamic_radiation_l -n 0000 -f /home/ltai/fsl
 DOCS
 
-while getopts t:d:r:p: option
+while getopts d:p:v:m:n:f: option
    do
    case "${option}" in
       d) ADNI_DIR=${OPTARG};;
