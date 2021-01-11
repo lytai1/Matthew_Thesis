@@ -98,14 +98,13 @@ def post_process_run(path, adni_merge_path=None, label=None):
 
     with FileLock(adni_merge_path + ".lock"):
 
-        with open(adni_merge_path, "w+") as csvf:
-            adni_merge = load_adni_merge(csvf)
-            odi_image = load_image(path)
-            patient_id, viscode = pull_patient_meta_data(path)
-            odi_stats = generate_statistics(odi_image, label)
-        
-            result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
-            result.to_csv(csvf)
+        adni_merge = load_adni_merge(adni_merge_path)
+        odi_image = load_image(path)
+        patient_id, viscode = pull_patient_meta_data(path)
+        odi_stats = generate_statistics(odi_image, label)
+    
+        result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
+        result.to_csv(adni_merge_path)
             
 
     return result
