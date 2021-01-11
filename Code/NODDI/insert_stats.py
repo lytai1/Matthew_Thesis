@@ -102,7 +102,7 @@ def post_process_run(path, adni_merge_path=None, label=None):
         odi_stats = generate_statistics(odi_image, label)
     
         result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
-        results.to_csv(adni_merge_path)
+        result.to_csv(adni_merge_path)
 
     return result
 
