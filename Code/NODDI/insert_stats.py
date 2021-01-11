@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
-from filelock import FileLock
+from multiprocessing import Process, Queue
 
 
 # Load Image functions
@@ -130,5 +130,9 @@ if __name__ == "__main__":
     print(args)
     print(args.label)
     print(type(args.label))
-
-    results = post_process_run(args.path, args.save_to, args.label)
+    
+    q = Queue()
+    p = Process(target=post_process_run, args=(args.path, args.save_to, args.label))
+    p.start()
+    p.join()
+    #results = post_process_run(args.path, args.save_to, args.label)
