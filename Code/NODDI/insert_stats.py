@@ -95,11 +95,15 @@ def post_process_run(path, adni_merge_path=None, label=None):
     if adni_merge_path is None:
         adni_merge_path = os.path.join(os.environ['adni_dir'], "INFO", "ADNIMERGE_RESULTS.csv")
 
-    adni_merge = load_adni_merge(adni_merge_path)
-    odi_image = load_image(path)
-    patient_id, viscode = pull_patient_meta_data(path)
-    odi_stats = generate_statistics(odi_image, label)
-    result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
+    with open(adni_merge_path, "w+") as csvf:
+        adni_merged = pd.read_csv(csvf, index_col=["PTID", "VISCODE"])
+    
+        odi_image = load_image(path)
+        patient_id, viscode = pull_patient_meta_data(path)
+        odi_stats = generate_statistics(odi_image, label)
+    
+        result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
+        results.to_csv(adni_merge_path)
 
     return result
 
@@ -126,4 +130,3 @@ if __name__ == "__main__":
     print(type(args.label))
 
     results = post_process_run(args.path, args.save_to, args.label)
-    results.to_csv(args.save_to)
