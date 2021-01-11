@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
-from multiprocessing import Process, Queue
 
 
 # Load Image functions
@@ -88,15 +87,13 @@ def post_process_run(path, adni_merge_path=None, label=None):
 
     Args:
         path (str): The path to the resulting tract.
-        adni_merge_path (str): The path to the ADNI_ODI_RESULTS.csv file
+        adni_merge_path (str): The path to the ADNIMERGE_RESULTS.csv file
 
     Example:
-          >>> post_process_run("path/to/tract.nii.gz", "path/to/ADNI_ODI_RESULTS.csv")
+          >>> post_process_run("path/to/tract.nii.gz", "path/to/ADNIMERGE_RESULTS.csv")
     """
     if adni_merge_path is None:
-        adni_merge_path = os.path.join(os.environ['adni_dir'], "INFO", "ADNI_ODI_RESULTS.csv")
-
-    #with FileLock(adni_merge_path + ".lock"):
+        adni_merge_path = os.path.join(os.environ['adni_dir'], "INFO", "ADNIMERGE_RESULTS.csv")
 
     adni_merge = load_adni_merge(adni_merge_path)
     odi_image = load_image(path)
@@ -105,7 +102,6 @@ def post_process_run(path, adni_merge_path=None, label=None):
 
     result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
     result.to_csv(adni_merge_path)
-            
 
     return result
 
@@ -119,7 +115,7 @@ if __name__ == "__main__":
                         required=True)
     parser.add_argument('--save_to', metavar='-st', type=str, help="The path to the csv file to insert the information "
                                                                    "to. This is assumed to be a copy of the "
-                                                                   "ADNIMERGE.csv file named ADNI_ODI_RESULTS.csv",
+                                                                   "ADNIMERGE.csv file named ADNIMERGE_RESULTS.csv",
                         required=True)
     parser.add_argument('--label', metavar='-l', type=str, help="The label for the specific mask insert. " 
                                                                 "(i.e. left_corticospinal or left_cingulum_hippo). "
@@ -130,9 +126,5 @@ if __name__ == "__main__":
     print(args)
     print(args.label)
     print(type(args.label))
-    
-    q = Queue()
-    p = Process(target=post_process_run, args=(args.path, args.save_to, args.label))
-    p.start()
-    p.join()
-    #results = post_process_run(args.path, args.save_to, args.label)
+
+    results = post_process_run(args.path, args.save_to, args.label)
