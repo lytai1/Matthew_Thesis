@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
-import fcntl
+from filelock import FileLock
 
 
 # Load Image functions
@@ -95,17 +95,18 @@ def post_process_run(path, adni_merge_path=None, label=None):
     """
     if adni_merge_path is None:
         adni_merge_path = os.path.join(os.environ['adni_dir'], "INFO", "ADNI_ODI_RESULTS.csv")
-    with open(adni_merge_path, "w+") as csvf:
-        fcntl.flock(csvf, fcntl.LOCK_EX)    
-        adni_merge = load_adni_merge(csvf)
-        odi_image = load_image(path)
-        patient_id, viscode = pull_patient_meta_data(path)
-        odi_stats = generate_statistics(odi_image, label)
-    
-        result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
-        result.to_csv(adni_merge_path)
+
+    with FileLock(adni_merge_path + ".lock"):
+
+        with open(adni_merge_path, "w+") as csvf:
+            adni_merge = load_adni_merge(csvf)
+            odi_image = load_image(path)
+            patient_id, viscode = pull_patient_meta_data(path)
+            odi_stats = generate_statistics(odi_image, label)
         
-        fcntl.flock(csvf, fcntl.LOCK_UN)
+            result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
+            result.to_csv(adni_merge_path)
+            
 
     return result
 
