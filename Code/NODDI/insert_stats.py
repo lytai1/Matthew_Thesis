@@ -97,7 +97,7 @@ def post_process_run(path, adni_merge_path=None, label=None):
 
     with open(adni_merge_path, "w+") as csvf:       
         try:
-            adni_merged = pd.read_csv(csvf, index_col=["PTID", "VISCODE"])
+            adni_merge = pd.read_csv(csvf, index_col=["PTID", "VISCODE"])
         except:
             my_index = pd.MultiIndex.from_tuples([], names=("PTID", "VISCODE"))
             
