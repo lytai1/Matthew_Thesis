@@ -84,8 +84,16 @@ def insert_stats(stats: dict, viscode: str, ptid: str, dataframe: pd.DataFrame) 
 def acquireLock(filename):
     ''' acquire exclusive lock file access '''
     locked_file_descriptor = open(filename+'.LOCK', 'w+')
-    fcntl.lockf(locked_file_descriptor, fcntl.LOCK_EX)
-    return locked_file_descriptor
+    while True:
+        try:
+            fcntl.lockf(locked_file_descriptor, fcntl.LOCK_EX)
+            return locked_file_descriptor
+        except IOError as e:
+            # raise on unrelated IOErrors
+            if e.errno != errno.EAGAIN:
+                raise
+            else:
+                time.sleep(0.1)
 
 def releaseLock(locked_file_descriptor):
     ''' release exclusive lock file access '''
