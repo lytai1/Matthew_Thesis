@@ -64,11 +64,15 @@ def insert_stats(stats: dict, viscode: str, ptid: str, dataframe: pd.DataFrame) 
     """
     for key, value in stats.items():
         print(f"VISCODE == {viscode} and PTID == {ptid}")
+        
+        '''
         mask = (dataframe["VISCODE"] == viscode) & (dataframe["PTID"] == ptid)
         idx = dataframe.loc[mask].index.values[0]
-
         dataframe.at[idx, key] = value
-        print(dataframe.loc[mask, key])
+        '''
+        dataframe.loc[(ptid, viscode), key] = value
+            
+        print(dataframe.loc[(ptid, viscode), key])
 
     return dataframe
 
