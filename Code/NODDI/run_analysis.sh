@@ -68,6 +68,7 @@ sbatch <<EOT
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20GB
 #SBATCH --job-name=$PATIENT_NUM
+#SBATCH --output=past_runs/$PATIENT_NUM-%j.out
 
 set -e
 ## These two steps make certain that the patients data is in the correct orientation
