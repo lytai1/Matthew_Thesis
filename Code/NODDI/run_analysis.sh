@@ -183,8 +183,8 @@ if [[ ! -f "${adni_dir}/INFO/" ]]; then
 fi
 
 ## Insert the generated statistics from the left cingulum hippocampal tract
-python insert_stats_orignial.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_cingulum_hippo"
+python insert_stats_original.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_cingulum_hippo"
 
 ## Insert the generated statistics from the left corticospinal tract 
-python insert_stats_orignial.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_corticospinal"
+python insert_stats_original.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_corticospinal"
 EOT
