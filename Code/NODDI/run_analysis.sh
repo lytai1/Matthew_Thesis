@@ -21,6 +21,9 @@ while getopts t:d:r:p: option
    esac
 done
 
+if [[ ! -f "past_runs/" ]]; then
+  mkdir -p "past_runs/"
+fi
 #while getopts t:d:r:p: option
 #do
 #case "${option}"
