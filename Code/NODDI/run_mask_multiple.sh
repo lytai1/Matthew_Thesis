@@ -52,7 +52,7 @@ while read patient_no viscode
 do
 	echo "working on patient $patient_no $viscode"
 	PATIENT_DIR="${ADNI_DIR}/$patient_no/$viscode"
-	RESULTS_DIR="${PATIENT_DIR}/$patient_no_$viscode"
+	RESULTS_DIR="${PATIENT_DIR}/${patient_no}_${viscode}"
 
 	OLDIFS2=$IFS
 	IFS=','
