@@ -21,6 +21,9 @@ while getopts t:d:r:p: option
    esac
 done
 
+if [[ ! -f "past_runs/" ]]; then
+  mkdir -p "past_runs/"
+fi
 #while getopts t:d:r:p: option
 #do
 #case "${option}"
@@ -68,6 +71,7 @@ sbatch <<EOT
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20GB
 #SBATCH --job-name=$PATIENT_NUM
+#SBATCH --output=past_runs/$PATIENT_NUM-%j.out
 
 set -e
 ## These two steps make certain that the patients data is in the correct orientation
@@ -177,9 +181,13 @@ fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CORTICOSPINAL_PATH}"
 
 echo "Inserting the data in to the csv file found here: ${adni_dir}/INFO/ADNIMERGE_RESULTS.csv"
 
+if [[ ! -f "${adni_dir}/INFO/" ]]; then
+  mkdir -p "${adni_dir}/INFO/"
+fi
+
 ## Insert the generated statistics from the left cingulum hippocampal tract
-python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNIMERGE_RESULTS.csv" --label "left_cingulum_hippo"
+python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_cingulum_hippo"
 
 ## Insert the generated statistics from the left corticospinal tract 
-python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz" --save_to "${adni_dir}/INFO/ADNIMERGE_RESULTS.csv" --label "left_corticospinal"
+python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_corticospinal"
 EOT
