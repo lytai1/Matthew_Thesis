@@ -4,10 +4,10 @@
 # ------------------------------------------
 
 
-ADNI_DIR="/home/ltai/mci_di/andi3_data/test/ADNI"
+ADNI_DIR="/home/ltai/mci_di/andi3_data/ad/ADNI"
 FSL_DIR="/home/ltai/fsl"
-INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/test/adni3_test_list.csv"
-INPUT_JHU_LIST=/home/ltai/mci_di/andi3_data/test/jhu_mask_list.csv
+INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/ad/adni3_ad_list.csv"
+INPUT_JHU_LIST="/home/ltai/mci_di/andi3_data/jhu_mask_list.csv"
 
 OLDIFS1=$IFS
 IFS=','

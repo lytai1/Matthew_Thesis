@@ -209,11 +209,13 @@ def get_viscodes(path):
                 " (there can be anything after the _)")
             return
 
-    out = []
-    for date, viscode in zip(dates, viscodes):
-        out.append(viscode)
+    pre_date = dates[0]
+    v = [0]
+    for date in dates[1:]:
+        v.append(v[-1] + int(round(date - pre_date)))
+        pre_date = date
 
-    return out
+    return list(map(lambda x: viscodes[x], v))
 
 #build DTIFromatter for Axial DTI
 #build T1Formatter for Accelerated_Sagittal_MPRAGE
