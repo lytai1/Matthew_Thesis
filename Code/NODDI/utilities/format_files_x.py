@@ -212,7 +212,7 @@ def get_viscodes(path):
     pre_date = dates[0]
     v = [0]
     for date in dates[1:]:
-        v.append(v[-1] + int(round(date - pre_date)))
+        v.append(v[-1] + int((date - pre_date).year))
         pre_date = date
 
     return list(map(lambda x: viscodes[x], v))
