@@ -11,7 +11,7 @@ INPUT_JHU_LIST="/home/ltai/mci_di/andi3_data/jhu_mask_list.csv"
 
 OLDIFS1=$IFS
 IFS=','
-[ ! -f $INPUT_PATIENT_LIST ] && { echo "$INPUT_JHU_LIST file not found"; exit 99; }
+[ ! -f $INPUT_PATIENT_LIST ] && { echo "$INPUT_PATIENT_LIST file not found"; exit 99; }
 while read patient_no viscode
 do
 	OLDIFS2=$IFS
