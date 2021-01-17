@@ -151,7 +151,7 @@ if __name__ == "__main__":
         print(patient_df)
         mask_df = pd.read_csv(mask_file)
         print(mask_df)
-        result_df = pd.read_csv(result_file)
+        result_df = pd.read_csv(result_file, error_bad_lines=False)
         print(result_df)
 
     # results = post_process_run(args.path, args.save_to, args.label)
