@@ -2,8 +2,8 @@
 # Purpose: insert statistics into a csv 
 # Author: Lok Yi Tai
 # ------------------------------------------
-ADNI_DIR="/home/ltai/mci_di/andi3_data/ad/ADNI"
-INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/ad/adni3_ad_list.csv"
+ADNI_DIR="/home/ltai/mci_di/andi3_data/mci/ADNI"
+INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/mci/adni3_mci_list.csv"
 INPUT_JHU_LIST="/home/ltai/mci_di/andi3_data/jhu_mask_list.csv"
 
 ORIGINAL_DIR=$PWD

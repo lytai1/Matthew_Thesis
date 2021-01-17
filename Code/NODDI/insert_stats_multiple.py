@@ -152,7 +152,7 @@ if __name__ == "__main__":
         mask_df = pd.read_csv(mask_file)
         print(mask_df)
         try:
-            result_df = pd.read_csv(result_file)
+            result_df = pd.read_csv(result_file, index_col=["PTID","VISCODE"])
         except pd.errors.EmptyDataError:
             result_df = pd.DataFrame(index=["PTID","VISCODE"])
         print(result_df)
