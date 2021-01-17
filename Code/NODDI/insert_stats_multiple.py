@@ -153,7 +153,7 @@ if __name__ == "__main__":
         print(mask_df)
         try:
             result_df = pd.read_csv(result_file)
-        except pandas.errors.EmptyDataError:
+        except pd.errors.EmptyDataError:
             result_df = pd.DataFrame(index_col=["PTID","VISCODE"])
         print(result_df)
 
