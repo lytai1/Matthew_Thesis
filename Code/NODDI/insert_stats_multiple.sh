@@ -12,4 +12,4 @@ if [[ ! -f $INFO_DIR ]]; then
 	mkdir -p $INFO_DIR
 fi
 
-python insert_stats_multiple.py -a $ADNI_DIR -p $INPUT_PATIENT_LIST -m ${INPUT_JHU_LIST} -s "${ADNI_DIR}/INFO/ADNI_ODI_RESULTS.csv"
+python insert_stats_multiple.py --adni $ADNI_DIR -patient $INPUT_PATIENT_LIST --mask ${INPUT_JHU_LIST} --save_to "${INFO_DIR}/ADNI_ODI_RESULTS.csv"
