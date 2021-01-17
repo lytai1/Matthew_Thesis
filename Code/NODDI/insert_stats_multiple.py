@@ -147,9 +147,9 @@ if __name__ == "__main__":
     print(args)
 
     with open(args.patient, "r") as patient_file, open(args.mask, "r") as mask_file, open(args.save_to, "r") as result_file:
-        patient_df = pd.read_csv(patient_file, header=0)
+        patient_df = pd.read_csv(patient_file, header=None)
         print(patient_df)
-        mask_df = pd.read_csv(mask_file, header=0)
+        mask_df = pd.read_csv(mask_file, header=None)
         print(mask_df)
         #try:
         result_df = pd.read_csv(result_file)
