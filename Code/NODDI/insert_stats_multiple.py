@@ -149,7 +149,7 @@ if __name__ == "__main__":
     with open(args.patient, "r") as patient_file, open(args.mask, "r") as mask_file, open(args.save_to, "r") as result_file:
         patient_df = pd.read_csv(patient_file, header=None, names=["PTID","VISCODE"])
         print(patient_df)
-        mask_df = pd.read_csv(mask_file, header=None, names=["volume_no","name"]))
+        mask_df = pd.read_csv(mask_file, header=None, names=["volume_no","name"])
         print(mask_df)
         try:
             result_df = pd.read_csv(result_file, index_col=["PTID","VISCODE"])
