@@ -3,7 +3,7 @@
 # Author: Lok Yi Tai
 # ------------------------------------------
 ADNI_DIR="/home/ltai/mci_di/andi3_data/cn/ADNI"
-INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/mci/adni3_cn_list.csv"
+INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/cn/adni3_cn_list.csv"
 INPUT_JHU_LIST="/home/ltai/mci_di/andi3_data/jhu_mask_list.csv"
 
 ORIGINAL_DIR=$PWD
