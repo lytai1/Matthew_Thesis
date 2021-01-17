@@ -154,7 +154,7 @@ if __name__ == "__main__":
         try:
             result_df = pd.read_csv(result_file)
         except pd.errors.EmptyDataError:
-            result_df = pd.DataFrame(index_col=["PTID","VISCODE"])
+            result_df = pd.DataFrame(index=["PTID","VISCODE"])
         print(result_df)
 
     # results = post_process_run(args.path, args.save_to, args.label)
