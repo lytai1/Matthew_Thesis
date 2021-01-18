@@ -16,7 +16,7 @@ do
 	PATIENT_DIR="${ADNI_DIR}/$patient_no/$viscode"
 	RESULTS_DIR="${PATIENT_DIR}/${patient_no}_${viscode}"
 	cd "${ADNI_DIR}/$patient_no/$viscode/${patient_no}_${viscode}/"
-	for f in "$folder/${patient_no}_${viscode}_odi_*"
+	for f in $folder/${patient_no}_${viscode}_odi_*
 	do
 	  echo "$f"
 	done
