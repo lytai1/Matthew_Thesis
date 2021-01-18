@@ -105,7 +105,7 @@ class InsertStats:
         odi_stats = self.generate_statistics(odi_image, label)
 
         for key, value in odi_stats.items():
-            print(f"VISCODE == {viscode} and PTID == {ptid}")       
+            print(f"VISCODE == {viscode} and PTID == {patient_id}")       
             print(value)
            
         #result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
