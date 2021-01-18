@@ -104,7 +104,7 @@ class InsertStats:
         patient_id, viscode = self.pull_patient_meta_data(path)
         odi_stats = self.generate_statistics(odi_image, label)
 
-        for key, value in stats.items():
+        for key, value in odi_stats.items():
             print(f"VISCODE == {viscode} and PTID == {ptid}")       
             print(value)
            
