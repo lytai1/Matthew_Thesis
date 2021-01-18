@@ -18,7 +18,8 @@ class InsertStats:
         try:
             self.result_df = pd.read_csv(result_file, index_col=["PTID","VISCODE"])
         except pd.errors.EmptyDataError:
-            self.result_df = pd.DataFrame(index=["PTID","VISCODE"])
+            my_index = pd.MultiIndex.from_tuples([], names=("PTID", "VISCODE"))
+            self.result_df = pd.DataFrame(index=my_index)
     
     # Load Image functions
     def get_bounded_image(self, vol):
