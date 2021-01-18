@@ -10,14 +10,16 @@ import fcntl
 
 
 class InsertStats:
-    def __init__(self, patient_file, mask_file, result_file):
-        patient_df = pd.read_csv(patient_file, header=None, names=["PTID","VISCODE"])
-        mask_df = pd.read_csv(mask_file, header=None, names=["volume_no","name"])
+    def __init__(self, adni_path, patient_file, mask_file, result_file):
+        self.adni_path = adni_path
+    
+        self.patient_df = pd.read_csv(patient_file, header=None, names=["PTID","VISCODE"])
+        self.mask_df = pd.read_csv(mask_file, header=None, names=["volume_no","name"])
         try:
-            result_df = pd.read_csv(result_file, index_col=["PTID","VISCODE"])
+            self.result_df = pd.read_csv(result_file, index_col=["PTID","VISCODE"])
         except pd.errors.EmptyDataError:
-            result_df = pd.DataFrame(index=["PTID","VISCODE"])
-        print(result_df)
+            self.result_df = pd.DataFrame(index=["PTID","VISCODE"])
+    
     # Load Image functions
     def get_bounded_image(self, vol):
         min_indicies, max_indicies = bounding_box(vol)
@@ -106,7 +108,13 @@ class InsertStats:
         result.to_csv(adni_merge_path)
 
         return result
-
+        
+    def insert_odi_adni(self):
+        for row in self.patient_df.itertuples():
+            path = os.path.join(self.adni_path, row.PID + "/" + row.VISCODE)
+            path = os.path.join(path, row.PID + "_" + row.VISCODE)
+            print(path)
+            
 
 if __name__ == "__main__":
 
@@ -124,8 +132,8 @@ if __name__ == "__main__":
     print(args)
 
     with open(args.patient, "r") as patient_file, open(args.mask, "r") as mask_file, open(args.save_to, "w+") as result_file:
-        i_s = InsertStats(patient_file, mask_file, result_file)
-        
+        i_s = InsertStats(arg.adni, patient_file, mask_file, result_file)
+        i_s.insert_odi_adni()
         
 
     # results = post_process_run(args.path, args.save_to, args.label)
