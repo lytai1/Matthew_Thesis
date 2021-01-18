@@ -20,4 +20,5 @@ do
 	do
 	  echo "$f"
 	done
+	cd ORIGINAL_DIR
 done < $INPUT_PATIENT_LIST
