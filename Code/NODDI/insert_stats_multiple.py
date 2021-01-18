@@ -119,8 +119,11 @@ class InsertStats:
             path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE)
             
             for m_row in self.mask_df.itertuples():
-                adni_merge_path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE + "_odi_" + m_row.name + ".nii.gz")
-                self.post_process_run(adni_merge_path, m_row.name)
+                odi_path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE + "_odi_" + m_row.name + ".nii.gz")
+                try: 
+                    self.post_process_run(odi_path, m_row.name)
+                except FileNotFoundError:
+                    print(odi_path + " not found")
             
 
 if __name__ == "__main__":
