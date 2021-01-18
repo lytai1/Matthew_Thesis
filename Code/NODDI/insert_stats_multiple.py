@@ -99,7 +99,7 @@ class InsertStats:
               >>> post_process_run("path/to/tract.nii.gz", "path/to/ADNIMERGE_RESULTS.csv")
         """
             
-        adni_merge = self.load_adni_merge(adni_merge_path)
+        #adni_merge = self.load_adni_merge(adni_merge_path)
         odi_image = self.load_image(path)
         patient_id, viscode = self.pull_patient_meta_data(path)
         odi_stats = self.generate_statistics(odi_image, label)
