@@ -120,7 +120,7 @@ class InsertStats:
             
             for m_row in self.mask_df.itertuples():
                 adni_merge_path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE + "_odi_" + m_row.name + ".nii.gz")
-                self.post_process_run(self, path, adni_merge_path, m_row.name)
+                self.post_process_run(path, adni_merge_path, m_row.name)
             
 
 if __name__ == "__main__":
