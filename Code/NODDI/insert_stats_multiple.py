@@ -110,10 +110,13 @@ class InsertStats:
         return result
         
     def insert_odi_adni(self):
-        for row in self.patient_df.itertuples():
-            path = os.path.join(self.adni_path, row.PTID + "/" + row.VISCODE)
-            path = os.path.join(path, row.PTID + "_" + row.VISCODE)
-            print(path)
+        for p_row in self.patient_df.itertuples():
+            path = os.path.join(self.adni_path, p_row.PTID + "/" + p_row.VISCODE)
+            path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE)
+            
+            for m_row in self.mask_df.itertuples():
+                adni_merge_path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE + "_odi_" + m_row.name + ".nii.gz"
+                print(adni_merge_path)
             
 
 if __name__ == "__main__":
