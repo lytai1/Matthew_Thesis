@@ -107,11 +107,11 @@ class InsertStats:
         for key, value in odi_stats.items():
             print(f"VISCODE == {viscode} and PTID == {patient_id}")       
             print(value)
-           
+            self.result_df.loc[(patient_id, viscode), key] = value
+
         #result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
         #result.to_csv(adni_merge_path)
 
-        #return result
         
     def insert_odi_adni(self):
         for p_row in self.patient_df.itertuples():
@@ -144,6 +144,6 @@ if __name__ == "__main__":
     with open(args.patient, "r") as patient_file, open(args.mask, "r") as mask_file, open(args.save_to, "w+") as result_file:
         i_s = InsertStats(args.adni, patient_file, mask_file, result_file)
         i_s.insert_odi_adni()
-        
+        i_s.result_df.to_csv(result_file)
 
     # results = post_process_run(args.path, args.save_to, args.label)
