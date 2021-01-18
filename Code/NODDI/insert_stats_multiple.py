@@ -104,10 +104,14 @@ class InsertStats:
         patient_id, viscode = pull_patient_meta_data(path)
         odi_stats = generate_statistics(odi_image, label)
 
-        result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
-        result.to_csv(adni_merge_path)
+        for key, value in stats.items():
+            print(f"VISCODE == {viscode} and PTID == {ptid}")       
+            print(value)
+           
+        #result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
+        #result.to_csv(adni_merge_path)
 
-        return result
+        #return result
         
     def insert_odi_adni(self):
         for p_row in self.patient_df.itertuples():
@@ -116,7 +120,7 @@ class InsertStats:
             
             for m_row in self.mask_df.itertuples():
                 adni_merge_path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE + "_odi_" + m_row.name + ".nii.gz")
-                print(adni_merge_path)
+                self.post_process_run(self, path, adni_merge_path, m_row.name)
             
 
 if __name__ == "__main__":
