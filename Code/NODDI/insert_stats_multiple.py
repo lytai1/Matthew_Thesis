@@ -111,8 +111,8 @@ class InsertStats:
         
     def insert_odi_adni(self):
         for row in self.patient_df.itertuples():
-            path = os.path.join(self.adni_path, row.PID + "/" + row.VISCODE)
-            path = os.path.join(path, row.PID + "_" + row.VISCODE)
+            path = os.path.join(self.adni_path, row.PTID + "/" + row.VISCODE)
+            path = os.path.join(path, row.PTID + "_" + row.VISCODE)
             print(path)
             
 
