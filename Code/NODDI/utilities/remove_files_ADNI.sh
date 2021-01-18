@@ -18,6 +18,6 @@ do
 	folder="${ADNI_DIR}/$patient_no/$viscode/${patient_no}_${viscode}"
 	for f in $folder/${patient_no}_${viscode}_odi_*
 	do
-	  echo "$f"
+	  rm -- "$f"
 	done
 done < $INPUT_PATIENT_LIST
