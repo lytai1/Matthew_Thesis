@@ -132,7 +132,7 @@ if __name__ == "__main__":
     print(args)
 
     with open(args.patient, "r") as patient_file, open(args.mask, "r") as mask_file, open(args.save_to, "w+") as result_file:
-        i_s = InsertStats(arg.adni, patient_file, mask_file, result_file)
+        i_s = InsertStats(args.adni, patient_file, mask_file, result_file)
         i_s.insert_odi_adni()
         
 
