@@ -31,7 +31,7 @@ IFS=','
 [ ! -f $INPUT_JHU_LIST ] && { echo "$INPUT_JHU_LIST file not found"; exit 99; }
 while read m_id mask_name
 do
-	MASK_PATH="${TRACTS_PATH}/$mask_name.nii.gz"
+	MASK_PATH="${TRACTS_PATH}/${mask_name}.nii.gz"
 
 	if [[ ! -f "${MASK_PATH}" ]]; then 
 		echo "$mask_name not found. Rename the volume related to the mask track"
@@ -61,7 +61,7 @@ do
 	do
 		echo "Check if odi value of $mask_name exists."
 		if [[ ! -f "${RESULTS_DIR}/${patient_no}_${viscode}_odi_${mask_name}.nii.gz" ]]; then 
-			MASK_PATH="${TRACTS_PATH}/$mask_name.nii.gz"
+			MASK_PATH="${TRACTS_PATH}/${mask_name}.nii.gz"
 			echo "odi of $mask_name for this patient does not exist"
 			echo "Segmenting the ${mask_name} region using the white matter segmented odi values"
 			fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${MASK_PATH}" "${RESULTS_DIR}/${patient_no}_${viscode}_odi_${mask_name}.nii.gz"
