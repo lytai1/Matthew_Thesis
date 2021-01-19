@@ -37,7 +37,7 @@ do
 		echo "$mask_name not found. Rename the volume related to the mask track"
 		cd $TRACTS_PATH
 		# rename the volumes related to the mask tracts
-		mv "${TRACTS_PATH}/vol$m_id.nii.gz" "${MASK_PATH}"
+		mv "${TRACTS_PATH}/vol${m_id}.nii.gz" "${MASK_PATH}"
 		cd $ORIGINAL_DIR
 	fi
 done < $INPUT_JHU_LIST
