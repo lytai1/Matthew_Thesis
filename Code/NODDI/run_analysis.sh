@@ -13,10 +13,10 @@ DOCS
 while getopts t:d:r:p: option
    do
    case "${option}" in
-      t) T1_PATH="${OPTARG}" ;;
-      d) DTI_PATH=${OPTARG};;
-      r) REF_PATH=${OPTARG};;
+      d) ADNI_DIR=${OPTARG};;
+ 	    f) FSL_DIR=${OPTARG};;
       p) PATIENT_NUM=${OPTARG};;
+	    v) VISCODE=${OPTARG};;
       *) INVALID_ARGS=${OPTARG};;
    esac
 done
@@ -34,6 +34,11 @@ fi
 
 
 ORIGINAL_DIR=$PWD
+T1_PATH=$ADNI_DIR/$PATIENT_NUM/$VISCODE/${PATIENT_NUM}_${VISCODE}_T1.nii
+DTI_PATH=$ADNI_DIR/$PATIENT_NUM/$VISCODE/"${PATIENT_NUM}_${VISCODE}".nii
+REF_PATH=$FSL_DIR/data/standard/avg152T1_brain.nii
+
+
 T1_DIR=$(dirname "${T1_PATH}")
 DTI_DIR=$(dirname "${DTI_PATH}")
 RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}"
@@ -61,7 +66,7 @@ DTI_REG_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REG_FILE_EXT}"
 RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}"
 
 WHITE_MATTER_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}/WHITE_MATTER_SEGMENTATION" 
-TRACTS_PATH="${data_dir}/tracts"
+TRACTS_PATH="$(dirname $ADNI_DIR)/tracts"
 LEFT_CINGULUM_HIPPO_PATH="${TRACTS_PATH}/left_cingulum_hippo.nii.gz"
 LEFT_CORTICOSPINAL_PATH="${TRACTS_PATH}/left_corticospinal.nii.gz"
 
@@ -157,37 +162,4 @@ python run_noddi.py --path $RESULTS_DIR --model 1 --label adni
 echo "Masking the odi values generated with the white matter segmentation from the patients T1"
 fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
-## Check to see if the tract has been generated
-## split the tracts in one file to individual ones
-if [[ ! -f "${LEFT_CINGULUM_HIPPO_PATH}" || ! -f "${LEFT_CORTICOSPINAL_PATH}" ]]; then 
-	echo "No tract volumes were found. Preparing the JHU-ICBM tract segmentations"
-	# split the JHU-ICBM-tracts file
-        mkdir -p $TRACTS_PATH
-	cd $TRACTS_PATH
-	fslsplit "${FSLDIR}/data/atlases/JHU/JHU-ICBM-tracts-prob-2mm.nii.gz"
-	# rename the volumes related to the left cingulum hippocampal and the left corticospinal tracts
-	mv "${TRACTS_PATH}/vol0006.nii.gz" "${LEFT_CINGULUM_HIPPO_PATH}"
-	mv "${TRACTS_PATH}/vol0002.nii.gz" "${LEFT_CORTICOSPINAL_PATH}"
-	cd $ORIGINAL_DIR	
-fi
-
-# Segment the left cingulum hippocampal region
-echo "Segmenting the left cingulum hippocampal region using the white matter segmented odi values"
-fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CINGULUM_HIPPO_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz"
-
-# Segment the left corticospinal region
-echo "Segmenting the left corticospinal region using the white matter segmented odi values"
-fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${LEFT_CORTICOSPINAL_PATH}" "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz"
-
-echo "Inserting the data in to the csv file found here: ${adni_dir}/INFO/ADNIMERGE_RESULTS.csv"
-
-if [[ ! -f "${adni_dir}/INFO/" ]]; then
-  mkdir -p "${adni_dir}/INFO/"
-fi
-
-## Insert the generated statistics from the left cingulum hippocampal tract
-python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_cingulum_hippo.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_cingulum_hippo"
-
-## Insert the generated statistics from the left corticospinal tract 
-python insert_stats.py --path "${RESULTS_DIR}/${PATIENT_NUM}_odi_left_corticospinal.nii.gz" --save_to "${adni_dir}/INFO/ADNI_ODI_RESULTS.csv" --label "left_corticospinal"
 EOT
