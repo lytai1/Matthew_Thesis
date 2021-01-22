@@ -1,9 +1,9 @@
 #!/bin/bash
-# Purpose: insert statistics into a csv 
+# Purpose: insert statistics into a csv by running insert_stats_multiple.py
 # Author: Lok Yi Tai
 # ------------------------------------------
-ADNI_DIR="/home/ltai/mci_di/andi3_data/ad/ADNI"
-INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/ad/adni3_ad_list.csv"
+ADNI_DIR="/home/ltai/mci_di/andi3_data/test/ADNI"
+INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/test/adni3_test_list.csv"
 INPUT_JHU_LIST="/home/ltai/mci_di/andi3_data/jhu_mask_list.csv"
 
 INFO_DIR="${ADNI_DIR}/INFO"
