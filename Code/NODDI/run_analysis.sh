@@ -1,24 +1,24 @@
 #!/bin/bash
 << 'DOCS'
 options:
-    -t The T1 file to run with
-   -d The DTI file to run with
-   -r The reference standard template to register against
-   -p The patient number to use as the name
+	-d The ADNI directory
+	-f The FSL directory
+	-p The patient number "###_S_####"
+	-v The patient viscode e.g. bl
 
 Sample run script:
 bash run_analysis.sh -d /home/ltai/mci_di/andi3_data/test/ADNI -f /home/ltai/fsl -p 032_S_6602 -v bl
 DOCS
 
 while getopts d:f:p:v: option
-   do
-   case "${option}" in
+	do
+	case "${option}" in
 		d) ADNI_DIR=${OPTARG};;
 		f) FSL_DIR=${OPTARG};;
 		p) PATIENT_NUM=${OPTARG};;
-	    v) VISCODE=${OPTARG};;
+		v) VISCODE=${OPTARG};;
 		*) INVALID_ARGS=${OPTARG};;
-   esac
+	esac
 done
 
 if [[ ! -f "past_runs/" ]]; then
@@ -107,8 +107,6 @@ if [[ ! -f "${DTI_CORR_PATH}" ]]; then
   eddy_correct $DTI_SEG_PATH $DTI_CORR_PATH trilinear
 fi
 
-echo $T1_SEG_PATH
-echo "We're just before we call flirt"
 
 ## linear registration (rotate, translate, resizing, skew) (coregistration)
 ## first line saving transformation matrix 
@@ -138,11 +136,10 @@ fi
 ## white matter, grey matter and CSF
 ## partial voxel approximation
 if [[ ! -f "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" ]]; then
+  echo "Segment the T1 brain into 3 categories for use in the resulting noddi image"
   mkdir -p "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION"
   fast -n 3 -o "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_${VISCODE}" ${T1_REG_PATH}
 fi
-
-echo "The resulting file can be found here: ${DTI_REG_PATH}"
 
 
 echo "Preparing the directory for the patient run"
@@ -161,4 +158,5 @@ python run_noddi.py --path $RESULTS_DIR --model 1 --label adni
 echo "Masking the odi values generated with the white matter segmentation from the patients T1"
 fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
+echo "Preprocessing and NODDI analysis of ${PATIENT_NUM} ${VISCODE} is done"
 EOT
