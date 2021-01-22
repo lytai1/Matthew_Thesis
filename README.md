@@ -38,9 +38,11 @@ conda activate dmipy
 3) install all python packages. Make sure the numpy installed is in version 1.17.3
 pip install numpy==1.17.3 pandas matplotlib dipy pathos numba fury dill
 4) install fsl
+
   a) download fslinstaller.py in https://fsl.fmrib.ox.ac.uk/fsldownloads_registration
   b) python fslinstaller.py (make sure it is in python 2.x environment. do conda deactivate to run in base environment)
   c) select the right directory for the fsl folder
+  
 5) install dmipy package
 (need numpy==1.15.4 for windows to work)
 cd dmipy
@@ -80,6 +82,7 @@ conda install -c conda-forge dcm2niix
 4) new folders bl and m12 will be found in the directory instead of the orignial files
 
 example of the directory:
+
 ![Example directory preprocessing](./Documentation/sample_dir_after_preprocessing.png)
 
 # To run NODDI analysis for one patient
@@ -90,6 +93,7 @@ example of the directory:
 3) all jobs can be found in the /past_runs directory
 
 example of the directory after NODDI analysis:
+
 ![Example directory noddi1](./Documentation/sample_dir_after_noddi1.png)
 ![Example directory noddi2](./Documentation/sample_dir_after_noddi2.png)
 ![Example directory noddi3](./Documentation/sample_dir_after_noddi3.png)
