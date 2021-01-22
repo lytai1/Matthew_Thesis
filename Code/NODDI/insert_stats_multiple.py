@@ -68,8 +68,6 @@ class InsertStats:
         odi_stats = self.generate_statistics(odi_image, label)
 
         for key, value in odi_stats.items():
-            print(f"VISCODE == {viscode} and PTID == {patient_id}")       
-            print(value)
             self.result_df.loc[(patient_id, viscode), key] = value
 
 
@@ -103,9 +101,9 @@ if __name__ == "__main__":
                         required=True)
 
     args = parser.parse_args()
-    print(args)
+    print("Start extracting ODI values and insert into csv file")
 
     with open(args.patient, "r") as patient_file, open(args.mask, "r") as mask_file, open(args.save_to, "w+") as result_file:
         i_s = InsertStats(args.adni, patient_file, mask_file, result_file)
         i_s.insert_odi_adni()
-
+    print("Done")
