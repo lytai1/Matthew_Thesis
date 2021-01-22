@@ -12,7 +12,7 @@ pip
 dmipy (python package)
 https://github.com/AthenaEPI/dmipy.git
 
-other python package:
+# other python package:
 numpy(1.17.3 <= for dmipy to work)
 dipy
 pathos
@@ -24,11 +24,11 @@ dill
 dicom2nifti
 dcm2niix (installed using conda)
 
-git repos:
+# git repos:
 diffusion_imaging
 https://github.com/lytai1/difusion_imaging.git
 
-#Setup
+# Setup
 1) clone this repo, diffusion_imaging and dmipy repos
 2) create conda environment (dmipy is the name of the environment used in this readme file)
 conda create --name dmipy python==3.7
@@ -55,7 +55,7 @@ conda install -c conda-forge dcm2niix
 (make sure it is in the "dmipy" conda environment)
 ** restart after fsl and dmipy package installation
 
-#ADNI database access
+# ADNI database access
 1) go to http://adni.loni.usc.edu/
 2) go to the "data & sample" tab, click "access data and samples"
 3) click on login in the middle of the page
@@ -69,7 +69,7 @@ image: select both "DTI", "MRI" and "and"
 8) select the patients with "Accelerated Sgital MPRAGE" and "Axial DTI"
 9) click one click download
 
-#To convert DCM files to NIFTI format
+# To convert DCM files to NIFTI format
 ** run `conda activate dmipy` first
 1) make sure dicom2nifti and dcm2niix is installed in conda environment
 `pip install dicom2nifti`
@@ -81,14 +81,14 @@ conda install -c conda-forge dcm2niix
 example of the directory:
 ![Example directory preprocessing](./Documentation/sample_dir_after_preprocessing.png)
 
-#To run NODDI analysis for one patient
+# To run NODDI analysis for one patient
 ** run `conda activate dmipy` first
 1) cd ~/Matthew_Thesis/Code/NODDI/
 2) run the following command
 `bash run_analysis.sh -d ~t/ADNI -f ~/fsl -p 032_S_6602 -v bl`
 3) all jobs can be found in the /past_runs directory
 
-#To run NODDI analysis for multiple patients
+# To run NODDI analysis for multiple patients
 ** run `conda activate dmipy` first
 1) cd ~/Matthew_Thesis/Code/NODDI/
 2) store list of patient id and viscode in csv file e.g. adni3_test_list.csv
@@ -96,7 +96,7 @@ example of the directory:
 4) `bash run_analysis_multiple.sh`
 5) all jobs can be found in the /past_runs directory
 
-#To apply JHU mask tracts and extract ODI for multiple patients
+# To apply JHU mask tracts and extract ODI for multiple patients
 ** run `conda activate dmipy` first, make sure NODDI analysis is done
 1) cd ~/Matthew_Thesis/Code/NODDI/
 2) store list of patient id and viscode in csv file e.g. adni3_test_list.csv
@@ -105,7 +105,7 @@ example of the directory:
 5) run command
 `bash run_mask_multiple.sh`
 
-#To extract average ODI values and insert into a csv file
+# To extract average ODI values and insert into a csv file
 ** run `conda activate dmipy` first, make sure NODDI analysis is done and applied mask tracts
 1) cd ~/Matthew_Thesis/Code/NODDI/
 2) store list of patient id and viscode in csv file e.g. adni3_test_list.csv
