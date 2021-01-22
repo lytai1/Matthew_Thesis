@@ -24,14 +24,6 @@ done
 if [[ ! -f "past_runs/" ]]; then
   mkdir -p "past_runs/"
 fi
-#while getopts t:d:r:p: option
-#do
-#case "${option}"
-#in 
-#t) T1_PATH=${OPTARG};;
-#sac
-#done
-
 
 ORIGINAL_DIR=$PWD
 T1_PATH="$ADNI_DIR/$PATIENT_NUM/$VISCODE/${PATIENT_NUM}_${VISCODE}_T1.nii"
@@ -63,11 +55,9 @@ DTI_CORR_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_DTI${CORRECTION_FILE_EXT}"
 DTI_REG_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_DTI${REG_FILE_EXT}"
 
 RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}"
-
 WHITE_MATTER_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}/WHITE_MATTER_SEGMENTATION" 
 TRACTS_PATH="$(dirname $ADNI_DIR)/tracts"
-LEFT_CINGULUM_HIPPO_PATH="${TRACTS_PATH}/left_cingulum_hippo.nii.gz"
-LEFT_CORTICOSPINAL_PATH="${TRACTS_PATH}/left_corticospinal.nii.gz"
+
 
 sbatch <<EOT
 #!/bin/bash
