@@ -63,7 +63,7 @@ DTI_REF_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REF_FILE_EXT}"
 DTI_CORR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${CORRECTION_FILE_EXT}"
 DTI_REG_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REG_FILE_EXT}"
 
-RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}"
+RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}"
 
 WHITE_MATTER_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}/WHITE_MATTER_SEGMENTATION" 
 TRACTS_PATH="$(dirname $ADNI_DIR)/tracts"
@@ -80,7 +80,7 @@ sbatch <<EOT
 
 set -e
 ## These two steps make certain that the patients data is in the correct orientation
-## Just rotating the images (in (multiple) 90 degrees), make sure it is not flip
+## rotating the images (in (multiple) 90 degrees), make sure it is not flip
 if [[ ! -f $DTI_OR_PATH ]]; then
   echo "Orienting DTI to standard space"
   fslreorient2std $DTI_PATH $DTI_OR_PATH
