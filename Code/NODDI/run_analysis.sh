@@ -41,7 +41,6 @@ REF_PATH="$FSL_DIR/data/standard/avg152T1_brain.nii"
 
 T1_DIR=$(dirname "${T1_PATH}")
 DTI_DIR=$(dirname "${DTI_PATH}")
-RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}"
 
 NII_FILE_EXT=".nii.gz"
 REORIENT_FILE_EXT="_or${NII_FILE_EXT}"
@@ -51,21 +50,21 @@ CORRECTION_FILE_EXT="_correction${NII_FILE_EXT}"
 MAT_FILE_EXT="_refMNI152.mat"
 REG_FILE_EXT="_reg${NII_FILE_EXT}"
 
-T1_OR_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REORIENT_FILE_EXT}"
-T1_REF_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REF_FILE_EXT}"
-T1_REG_PATH="${T1_DIR}/${PATIENT_NUM}_T1${REG_FILE_EXT}"
-T1_MAT_PATH="${T1_DIR}/${PATIENT_NUM}_T1${MAT_FILE_EXT}"
-T1_SEG_PATH="${T1_DIR}/${PATIENT_NUM}_T1${SEG_FILE_EXT}"
+T1_OR_PATH="${T1_DIR}/${PATIENT_NUM}_${VISCODE}_T1${REORIENT_FILE_EXT}"
+T1_REF_PATH="${T1_DIR}/${PATIENT_NUM}_${VISCODE}_T1${REF_FILE_EXT}"
+T1_REG_PATH="${T1_DIR}/${PATIENT_NUM}_${VISCODE}_T1${REG_FILE_EXT}"
+T1_MAT_PATH="${T1_DIR}/${PATIENT_NUM}_${VISCODE}_T1${MAT_FILE_EXT}"
+T1_SEG_PATH="${T1_DIR}/${PATIENT_NUM}_${VISCODE}_T1${SEG_FILE_EXT}"
 
-DTI_OR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REORIENT_FILE_EXT}"
-DTI_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${SEG_FILE_EXT}"
-DTI_REF_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REF_FILE_EXT}"
-DTI_CORR_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${CORRECTION_FILE_EXT}"
-DTI_REG_PATH="${DTI_DIR}/${PATIENT_NUM}_DTI${REG_FILE_EXT}"
+DTI_OR_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_DTI${REORIENT_FILE_EXT}"
+DTI_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_DTI${SEG_FILE_EXT}"
+DTI_REF_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_DTI${REF_FILE_EXT}"
+DTI_CORR_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_DTI${CORRECTION_FILE_EXT}"
+DTI_REG_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_DTI${REG_FILE_EXT}"
 
 RESULTS_DIR="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}"
 
-WHITE_MATTER_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}/WHITE_MATTER_SEGMENTATION" 
+WHITE_MATTER_SEG_PATH="${DTI_DIR}/${PATIENT_NUM}_${VISCODE}/WHITE_MATTER_SEGMENTATION" 
 TRACTS_PATH="$(dirname $ADNI_DIR)/tracts"
 LEFT_CINGULUM_HIPPO_PATH="${TRACTS_PATH}/left_cingulum_hippo.nii.gz"
 LEFT_CORTICOSPINAL_PATH="${TRACTS_PATH}/left_corticospinal.nii.gz"
@@ -117,30 +116,30 @@ echo "We're just before we call flirt"
 ## check line 112  "DTI_DIR" or "T1"?
 if [[ ! -f "${T1_REG_PATH}" ]]; then
   echo "Running flirt on the T1 with a reference to the 2mm MNI reference"
-  flirt -in $T1_SEG_PATH -ref $REF_PATH -omat "${T1_DIR}/${PATIENT_NUM}_T1.mat"
-  flirt -in $T1_SEG_PATH -ref $REF_PATH -out $T1_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}_T1.mat" ## check this!!!
+  flirt -in $T1_SEG_PATH -ref $REF_PATH -omat "${T1_DIR}/${PATIENT_NUM}_${VISCODE}_T1.mat"
+  flirt -in $T1_SEG_PATH -ref $REF_PATH -out $T1_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_T1.mat" ## check this!!!
 fi
 
 ## This is the step that registers the patients scans into a known template space for use in extracting specific regions later
 if [[ ! -f "${DTI_REG_PATH}" ]]; then
   echo "Running flirt on the DTI with a reference to the 2mm MNI template."
-  flirt -in $DTI_CORR_PATH -ref $REF_PATH -omat "${DTI_DIR}/${PATIENT_NUM}.mat"
-  flirt -in $DTI_CORR_PATH -ref $REF_PATH -out $DTI_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}.mat"
+  flirt -in $DTI_CORR_PATH -ref $REF_PATH -omat "${DTI_DIR}/${PATIENT_NUM}_${VISCODE}.mat"
+  flirt -in $DTI_CORR_PATH -ref $REF_PATH -out $DTI_REG_PATH -applyxfm -init "${DTI_DIR}/${PATIENT_NUM}_${VISCODE}.mat"
 fi
 
 ## generating binary mask of registered data
-if [[ ! -f "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" ]]; then
+if [[ ! -f "${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" ]]; then
   echo "Generating binary mask from registered data"
-  bet $DTI_REG_PATH "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" -m -F
+  bet $DTI_REG_PATH "${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" -m -F
 fi
 
 ## Segment the T1 brain into 3 categories for use in the resulting noddi image 
 ## might only save the white matter one
 ## white matter, grey matter and CSF
 ## partial voxel approximation
-if [[ ! -f "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_pve_2.nii.gz" ]]; then
+if [[ ! -f "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" ]]; then
   mkdir -p "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION"
-  fast -n 3 -o "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}" ${T1_REG_PATH}
+  fast -n 3 -o "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_${VISCODE}" ${T1_REG_PATH}
 fi
 
 echo "The resulting file can be found here: ${DTI_REG_PATH}"
@@ -148,10 +147,10 @@ echo "The resulting file can be found here: ${DTI_REG_PATH}"
 
 echo "Preparing the directory for the patient run"
 mkdir -p $RESULTS_DIR
-cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}${NII_FILE_EXT}"
-cp "${T1_DIR}/${PATIENT_NUM}.bval" "${RESULTS_DIR}/${PATIENT_NUM}.bval"
-cp "${T1_DIR}/${PATIENT_NUM}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}.bvec"
-cp "${DTI_DIR}/${PATIENT_NUM}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
+cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}${NII_FILE_EXT}"
+cp "${T1_DIR}/${PATIENT_NUM}_${VISCODE}.bval" "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}.bval"
+cp "${T1_DIR}/${PATIENT_NUM}_${VISCODE}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}.bvec"
+cp "${DTI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
 
 
 echo "Running NODDI analysis"
@@ -160,6 +159,6 @@ python run_noddi.py --path $RESULTS_DIR --model 1 --label adni
 ## Segment the white matter via the T1
 ## ignore everything that is not white matter
 echo "Masking the odi values generated with the white matter segmentation from the patients T1"
-fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
+fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
 EOT
