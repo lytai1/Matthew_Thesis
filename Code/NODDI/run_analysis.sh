@@ -10,7 +10,7 @@ Sample run script:
 bash run_analysis.sh -d /home/ltai/mci_di/andi3_data/test/ADNI -f /home/ltai/fsl -p 032_S_6602 -v bl
 DOCS
 
-while getopts t:d:r:p: option
+while getopts d:f:p:v: option
    do
    case "${option}" in
 		d) ADNI_DIR=${OPTARG};;
