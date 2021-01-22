@@ -31,27 +31,46 @@ https://github.com/lytai1/difusion_imaging.git
 # Setup
 1. clone this repo, diffusion_imaging and dmipy repos
 2. create conda environment (dmipy is the name of the environment used in this readme file)
-      conda create --name dmipy python==3.7
+      
+      `conda create --name dmipy python==3.7`
+      
       ==> y to proceed
-      conda init
-      conda activate dmipy
+      
+      `conda init`
+      
+      `conda activate dmipy`
+      
 3. install all python packages. Make sure the numpy installed is in version 1.17.3
-`pip install numpy==1.17.3 pandas matplotlib dipy pathos numba fury dill`
+
+      `pip install numpy==1.17.3 pandas matplotlib dipy pathos numba fury dill`
+
 4. install fsl
-  1. download fslinstaller.py in https://fsl.fmrib.ox.ac.uk/fsldownloads_registration
-  2. python fslinstaller.py (make sure it is in python 2.x environment. do conda deactivate to run in base environment)
-  3. select the right directory for the fsl folder
+      1. download fslinstaller.py in https://fsl.fmrib.ox.ac.uk/fsldownloads_registration
+      2. `python fslinstaller.py` (make sure it is in python 2.x environment. do conda deactivate to run in base environment)
+      3. select the right directory for the fsl folder
 5. install dmipy package (need numpy==1.15.4 for windows to work)
-`cd dmipy`
-`python setup.py install`
+
+      `cd dmipy`
+
+      `python setup.py install`
+
 6. install diffusion_imaging package
-`cd diffusion_imaging`
-`python setup.py install`
+
+      `cd diffusion_imaging`
+
+      `python setup.py install`
+
 7. install dicom2nifti python package
-`pip install dicom2nifti`
+
+      `pip install dicom2nifti`
+
 8. install dcm2niix
-`conda install -c conda-forge dcm2niix`
+
+      `conda install -c conda-forge dcm2niix`
+
 (make sure it is in the "dmipy" conda environment)
+
+
 ** restart after fsl and dmipy package installation
 
 # ADNI database access
@@ -71,11 +90,11 @@ image: select both "DTI", "MRI" and "and"
 # To convert DCM files to NIFTI format
 ** run `conda activate dmipy` first
 1) make sure dicom2nifti and dcm2niix is installed in conda environment
-`pip install dicom2nifti`
+      `pip install dicom2nifti`
 conda install -c conda-forge dcm2niix
 2) `cd ~/Matthew_Thesis/Code/NODDI/utilities`
 3) run the following command
-`python format_files.py --path ~/ADNI/`
+      `python format_files.py --path ~/ADNI/`
 4) new folders bl and m12 will be found in the directory instead of the orignial files
 
 example of the directory:
