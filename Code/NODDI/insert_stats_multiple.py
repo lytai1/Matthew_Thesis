@@ -42,7 +42,7 @@ class InsertStats:
 
     def load_image(self, path):
         image = nib.load(path)
-        bounded_image = self.get_bounded_image(image.get_data())
+        bounded_image = self.get_bounded_image(image.get_fdata())
         return bounded_image
 
     # Generate Statistics function
