@@ -7,17 +7,17 @@ options:
    -p The patient number to use as the name
 
 Sample run script:
-sbatch run_analysis.sh -t some/path/to/patient#_T1.nii.gz -d some/path/to/patient#.nii.gz -r some/path/to/avg152.nii.gz -p ###_S_####
+bash run_analysis.sh -d /home/ltai/mci_di/andi3_data/test/ADNI -f /home/ltai/fsl -p 032_S_6602 -v bl
 DOCS
 
 while getopts t:d:r:p: option
    do
    case "${option}" in
-      d) ADNI_DIR=${OPTARG};;
- 	    f) FSL_DIR=${OPTARG};;
-      p) PATIENT_NUM=${OPTARG};;
+		d) ADNI_DIR=${OPTARG};;
+		f) FSL_DIR=${OPTARG};;
+		p) PATIENT_NUM=${OPTARG};;
 	    v) VISCODE=${OPTARG};;
-      *) INVALID_ARGS=${OPTARG};;
+		*) INVALID_ARGS=${OPTARG};;
    esac
 done
 
@@ -35,7 +35,7 @@ fi
 
 ORIGINAL_DIR=$PWD
 T1_PATH=$ADNI_DIR/$PATIENT_NUM/$VISCODE/${PATIENT_NUM}_${VISCODE}_T1.nii
-DTI_PATH=$ADNI_DIR/$PATIENT_NUM/$VISCODE/"${PATIENT_NUM}_${VISCODE}".nii
+DTI_PATH=$ADNI_DIR/$PATIENT_NUM/$VISCODE/${PATIENT_NUM}_${VISCODE}.nii
 REF_PATH=$FSL_DIR/data/standard/avg152T1_brain.nii
 
 
