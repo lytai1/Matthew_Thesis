@@ -29,31 +29,28 @@ diffusion_imaging
 https://github.com/lytai1/difusion_imaging.git
 
 # Setup
-1) clone this repo, diffusion_imaging and dmipy repos
-2) create conda environment (dmipy is the name of the environment used in this readme file)
-conda create --name dmipy python==3.7
-==> y to proceed
-conda init
-conda activate dmipy
-3) install all python packages. Make sure the numpy installed is in version 1.17.3
-pip install numpy==1.17.3 pandas matplotlib dipy pathos numba fury dill
-4) install fsl
-
-  a) download fslinstaller.py in https://fsl.fmrib.ox.ac.uk/fsldownloads_registration
-  b) python fslinstaller.py (make sure it is in python 2.x environment. do conda deactivate to run in base environment)
-  c) select the right directory for the fsl folder
-  
-5) install dmipy package
-(need numpy==1.15.4 for windows to work)
-cd dmipy
-python setup.py install
-6) install diffusion_imaging package
-cd diffusion_imaging
-python setup.py install
-7) install dicom2nifti python package
-pip install dicom2nifti
-8) install dcm2niix
-conda install -c conda-forge dcm2niix
+1. clone this repo, diffusion_imaging and dmipy repos
+2. create conda environment (dmipy is the name of the environment used in this readme file)
+      conda create --name dmipy python==3.7
+      ==> y to proceed
+      conda init
+      conda activate dmipy
+3. install all python packages. Make sure the numpy installed is in version 1.17.3
+`pip install numpy==1.17.3 pandas matplotlib dipy pathos numba fury dill`
+4. install fsl
+  1. download fslinstaller.py in https://fsl.fmrib.ox.ac.uk/fsldownloads_registration
+  2. python fslinstaller.py (make sure it is in python 2.x environment. do conda deactivate to run in base environment)
+  3. select the right directory for the fsl folder
+5. install dmipy package (need numpy==1.15.4 for windows to work)
+`cd dmipy`
+`python setup.py install`
+6. install diffusion_imaging package
+`cd diffusion_imaging`
+`python setup.py install`
+7. install dicom2nifti python package
+`pip install dicom2nifti`
+8. install dcm2niix
+`conda install -c conda-forge dcm2niix`
 (make sure it is in the "dmipy" conda environment)
 ** restart after fsl and dmipy package installation
 
@@ -95,7 +92,9 @@ example of the directory:
 example of the directory after NODDI analysis:
 
 ![Example directory noddi1](./Documentation/sample_dir_after_noddi1.png)
+
 ![Example directory noddi2](./Documentation/sample_dir_after_noddi2.png)
+
 ![Example directory noddi3](./Documentation/sample_dir_after_noddi3.png)
 
 # To run NODDI analysis for multiple patients
