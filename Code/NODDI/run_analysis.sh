@@ -148,8 +148,6 @@ python run_noddi.py --path $RESULTS_DIR --model 1 --label adni
 echo "Masking the odi values generated with the white matter segmentation from the patients T1"
 fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
-
-echo 
 echo
 echo "*******************************************************************************************************************"
 echo "Preprocessing and NODDI analysis of ${PATIENT_NUM} ${VISCODE} is done"
