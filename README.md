@@ -78,6 +78,7 @@ conda install -c conda-forge dcm2niix
 3) run the following command
 `python format_files.py --path ~/ADNI/`
 4) new folders bl and m12 will be found in the directory instead of the orignial files
+
 example of the directory:
 ![Example directory preprocessing](./Documentation/sample_dir_after_preprocessing.png)
 
@@ -87,6 +88,11 @@ example of the directory:
 2) run the following command
 `bash run_analysis.sh -d ~t/ADNI -f ~/fsl -p 032_S_6602 -v bl`
 3) all jobs can be found in the /past_runs directory
+
+example of the directory after NODDI analysis:
+![Example directory noddi1](./Documentation/sample_dir_after_noddi1.png)
+![Example directory noddi2](./Documentation/sample_dir_after_noddi2.png)
+![Example directory noddi3](./Documentation/sample_dir_after_noddi3.png)
 
 # To run NODDI analysis for multiple patients
 ** run `conda activate dmipy` first
