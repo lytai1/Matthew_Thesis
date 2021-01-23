@@ -10,6 +10,18 @@ import fcntl
 
 
 class InsertStats:
+    """
+        This InsertStats class is used to extract average odi value from .nii.gz files and insert them into a csv file
+
+        Args:
+            adni_path (str): The path to the ADNI folder.
+            patient_file (file): The list of patients stored in a csv file
+            mask_file (file): The list of masks used to extract odi value stored in a csv file
+            result (file): The result stored in a csv file (can be empty)
+
+        Functions:
+            insert_odi_adni()
+    """
     def __init__(self, adni_path, patient_file, mask_file, result_file):
         self.adni_path = adni_path
     
@@ -30,23 +42,8 @@ class InsertStats:
 
     def load_image(self, path):
         image = nib.load(path)
-        bounded_image = self.get_bounded_image(image.get_data())
+        bounded_image = self.get_bounded_image(image.get_fdata())
         return bounded_image
-
-
-    def pull_patient_meta_data(self, path):
-        """
-        The patient_id and the viscode is obtained through the use of the directory structure
-        ../patient_id/viscode/file.file -> patient_id = patient_id and viscode = viscode
-        """
-        base_path, file_name = os.path.split(path)
-        base_path, patient_id = os.path.split(base_path)
-        base_path, viscode = os.path.split(base_path)
-
-        if viscode in patient_id:
-            patient_id = '_'.join(patient_id.split('_')[0:-1])
-        return (patient_id, viscode)
-
 
     # Generate Statistics function
     def generate_statistics(self, image, label):
@@ -57,64 +54,28 @@ class InsertStats:
         return stats_dict
 
 
-    # Load source csv
-    def load_adni_merge(self, path):
-        try:
-            adni_merged = pd.read_csv(path, index_col=["PTID", "VISCODE"])
-        except pd.errors.EmptyDataError:
-            my_index = pd.MultiIndex.from_tuples([], names=("PTID", "VISCODE"))
-            adni_merged = pd.DataFrame(index=my_index)
-        return adni_merged
-
-
-    # Insert stats function
-    def insert_stats(self, stats: dict, viscode: str, ptid: str, dataframe: pd.DataFrame)->pd.DataFrame:
-
-        # This function acts as a way to insert the statistics generated from the generate_statistics function.
-        # Args:
-        #     stats (dict): The statistics dictionary returned from the generate_statistics function
-        #     viscode (str): The visitation code for the patient
-        #                 (i.e. bl = baseline (first visit) m12 = 12 month after baseline)
-        #     ptid (str): The patients ID. Usuaully of the form ###_S_####
-        #     dataframe (pd.DataFrame): The dataframe to insert the stats into
-
-        # Returns:
-        #     pd.DataFrame: A dataframe that now contains those statistics
-        
-        for key, value in stats.items():
-            print(f"VISCODE == {viscode} and PTID == {ptid}")       
-            dataframe.loc[(ptid, viscode), key] = value
-            print(dataframe.loc[(ptid, viscode), key])
-
-        return dataframe
-
-    # Main function
-    def post_process_run(self, path, label=None):
-        """This function acts as the main function for the stat generation part of this program.
+    def post_process_run(self, path, patient_id, viscode, label):
+        """This function acts as the main function for the stat generation of individual odi files.
 
         Args:
-            path (str): The path to the resulting tract.
-            adni_merge_path (str): The path to the ADNIMERGE_RESULTS.csv file
-
-        Example:
-              >>> post_process_run("path/to/tract.nii.gz", "path/to/ADNIMERGE_RESULTS.csv")
+            path (str): The path to the resulting tract. (odi file)
+            patient_id (str): The patient number
+            viscode (str): The patient viscode
+            label (str): The name of the mask tract applied
         """
             
-        #adni_merge = self.load_adni_merge(adni_merge_path)
         odi_image = self.load_image(path)
-        patient_id, viscode = self.pull_patient_meta_data(path)
         odi_stats = self.generate_statistics(odi_image, label)
 
         for key, value in odi_stats.items():
-            print(f"VISCODE == {viscode} and PTID == {patient_id}")       
-            print(value)
             self.result_df.loc[(patient_id, viscode), key] = value
 
-        #result = insert_stats(stats=odi_stats, viscode=viscode, ptid=patient_id, dataframe=adni_merge)
-        #result.to_csv(adni_merge_path)
 
-        
     def insert_odi_adni(self):
+        """
+            The function acts as the main function for the stat generation of multiple patients. It extracts the path of ODI values and name of the mask tract applied.
+            It calls post_process_run to extract odi value of individual mask of each patient.
+        """
         for p_row in self.patient_df.itertuples():
             path = os.path.join(self.adni_path, p_row.PTID + "/" + p_row.VISCODE)
             path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE)
@@ -122,13 +83,13 @@ class InsertStats:
             for m_row in self.mask_df.itertuples():
                 odi_path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE + "_odi_" + m_row.name + ".nii.gz")
                 try: 
-                    self.post_process_run(odi_path, m_row.name)
+                    self.post_process_run(odi_path, p_row.PTID, p_row.VISCODE, m_row.name)
                 except FileNotFoundError:
                     print(odi_path + " not found")
-            
+        self.result_df.to_csv(result_file)
+    
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Takes the resulting data generated from the segmented tract and "
                                                  "inserts it into a common csv file")
     parser.add_argument('--adni', metavar='-a', type=str, help="The ADNI path storing all patients data", required=True)
@@ -140,11 +101,9 @@ if __name__ == "__main__":
                         required=True)
 
     args = parser.parse_args()
-    print(args)
+    print("Start extracting ODI values and insert into csv file")
 
     with open(args.patient, "r") as patient_file, open(args.mask, "r") as mask_file, open(args.save_to, "w+") as result_file:
         i_s = InsertStats(args.adni, patient_file, mask_file, result_file)
         i_s.insert_odi_adni()
-        i_s.result_df.to_csv(result_file)
-
-    # results = post_process_run(args.path, args.save_to, args.label)
+    print("Done")

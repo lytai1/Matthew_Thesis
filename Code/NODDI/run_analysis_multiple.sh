@@ -3,21 +3,21 @@
 # Author: Lok Yi Tai
 # ------------------------------------------
 
+INPUT_PATIENT_LIST=/home/ltai/mci_di/andi3_data/test/adni3_test_list.csv
+ADNI_DIR=/home/ltai/mci_di/andi3_data/test/ADNI
+FSL_DIR=/home/ltai/fsl
 
-export adni_dir="/home/ltai/mci_di/andi3_data/cn/ADNI"  
-export data_dir="/home/ltai/mci_di/andi3_data/cn/" 
-export mni_dir="/home/ltai/fsl/data/standard"
 
-INPUT=/home/ltai/mci_di/andi3_data/cn/adni3_cn_list.csv
 OLDIFS=$IFS
 IFS=','
-[ ! -f $INPUT ] && { echo "$INPUT file not found"; exit 99; }
+[ ! -f $INPUT_PATIENT_LIST ] && { echo "$INPUT_PATIENT_LIST file not found"; exit 99; }
+echo "start preprocessing and run NODDI of:"
 while read s_id viscode
 do
-	echo "run noddi of"
 	echo "s_id : $s_id"
 	echo "viscode : $viscode"
-	PATIENT_ID=$s_id VISCODE=$viscode; bash run_analysis.sh -t $adni_dir/$PATIENT_ID/$VISCODE/"${PATIENT_ID}_${VISCODE}"_T1.nii -d $adni_dir/$PATIENT_ID/$VISCODE/"${PATIENT_ID}_${VISCODE}".nii -r $mni_dir/avg152T1_brain.nii -p "${PATIENT_ID}"_$VISCODE
+	bash run_analysis.sh -d $ADNI_DIR -f $FSL_DIR -p $s_id -v $viscode
 
-done < $INPUT
+done < $INPUT_PATIENT_LIST
 IFS=$OLDIFS
+echo "all runs can be found in /past_runs"
