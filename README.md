@@ -85,7 +85,7 @@ Research Group: MCI (for MCI patients) or CN (for control)
 image: select both "DTI", "MRI" and "and"
 7) hit "search" 
 8) select the patients with "Accelerated Sgital MPRAGE" and "Axial DTI"
-9) click one click download
+9) click one click download ==> all the files should be presented in a "ADNI" directory
 
 # To convert DCM files to NIFTI format
 ** run `conda activate dmipy` first
@@ -129,7 +129,7 @@ example of the directory after NODDI analysis:
 1) cd ~/Matthew_Thesis/Code/NODDI/
 2) store list of patient id and viscode in csv file e.g. adni3_test_list.csv
 3) store list of volume number(4 digits) and name of mask track in csv file e.g. jhu_mask_list.csv
-4) modify the `ADNI_DIR`, `INPUT_PATIENT_LIST`, `INPUT_JHU_LIST` and `FSL_DIR` in the `run_analysis_multiple.sh` accordingly
+4) modify the `ADNI_DIR`, `INPUT_PATIENT_LIST`, `INPUT_JHU_LIST` and `FSL_DIR` in the `run_mask_multiple.sh` accordingly
 5) run command
 `bash run_mask_multiple.sh`
 
