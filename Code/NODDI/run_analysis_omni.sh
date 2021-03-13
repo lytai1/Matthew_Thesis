@@ -61,7 +61,6 @@ DTI_REG_PATH="${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}_DTI${REG_FILE_EXT}"
 RESULTS_DIR="${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}"
 WHITE_MATTER_SEG_PATH="${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}/WHITE_MATTER_SEGMENTATION" 
 
-: <<'END'
 sbatch <<EOT
 #!/bin/bash
 #SBATCH --time=24:00:00
@@ -124,6 +123,7 @@ cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}.bval" "${RESULTS_DIR}/${PATIENT_NUM}_
 cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}.bvec"
 cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
 
+: <<'END'
 
 echo "Running NODDI analysis"
 python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
@@ -136,5 +136,6 @@ fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NU
 echo
 echo "*******************************************************************************************************************"
 echo "Preprocessing and NODDI analysis of ${PATIENT_NUM} ${VISCODE} is done"
-EOT
+
 END
+EOT
