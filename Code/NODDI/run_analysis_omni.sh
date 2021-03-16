@@ -123,8 +123,6 @@ cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}.bval" "${RESULTS_DIR}/${PATIENT_NUM}_
 cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}.bvec"
 cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
 
-: <<'END'
-
 echo "Running NODDI analysis"
 python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
 
@@ -137,5 +135,4 @@ echo
 echo "*******************************************************************************************************************"
 echo "Preprocessing and NODDI analysis of ${PATIENT_NUM} ${VISCODE} is done"
 
-END
 EOT
