@@ -33,8 +33,8 @@ if [[ ! -f "${NODDI_DIR}" ]]; then
   mkdir -p "${NODDI_DIR}"
 fi
 
-T1_PATH="$NODDI_DIR/${PATIENT_NUM}_${VISCODE}_T1.nii"
-DTI_PATH="$NODDI_DIR/${PATIENT_NUM}_${VISCODE}.nii"
+T1_PATH="$NODDI_DIR/${PATIENT_NUM}_${VISCODE}_T1.nii.gz"
+DTI_PATH="$NODDI_DIR/${PATIENT_NUM}_${VISCODE}.nii.gz"
 
 #copy input files to NODDI directory
 cp "${INPUT_DIR}/input_bval.bval" "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}.bval"
