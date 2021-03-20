@@ -62,6 +62,10 @@ def org_dir(path, directory, patient_id):
     folders = get_all_files_in_directory(full_path) #list of date folders
     make_directories(viscodes, path)
 
+    logger.info(full_path)
+    logger.info(viscodes)
+    logger.info(folders)
+
     if all("Axial" in file for file in folders):
         move_files(path, viscodes, folders, patient_id, directory, "DTI")
     elif all("Sag" in file for file in folders):
