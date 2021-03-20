@@ -59,7 +59,7 @@ class S3Interface:
 			for (sourceDir, dirname, filename) in os.walk(file_path):
 				for file in filename:
 					if file[0] != '.':
-						full_path = os.path.join(sourceDir, file)
+						full_path = os.path.join(sourceDir[len(file_path)+1:], file)
 						logger.info(full_path)
 						# self.transfer.upload_file(full_path, self.bucket_name, os.path.join(destination_path, full_path))
 		except ClientError as e:
