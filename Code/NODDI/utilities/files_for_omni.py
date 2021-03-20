@@ -66,8 +66,10 @@ def move_files(path, viscodes, folders, patient_id, directory, type_image):
             for file in files:
                     if file[-4:].lower() == '.dcm':
                         shutil.copy(os.path.join(root, file), os.path.join(type_path, file))
-    logger.info(f"remove files in: {os.path.join(path, directory)}")
-    os.rmdir(os.path.join(path, directory))
+    org_dir = os.path.join(path, directory)
+    logger.info(f"remove files in: {org_dir}")
+    if os.path.exists(org_dir):
+        os.rmtree(org_dir)
 
 def org_dir(path, directory, patient_id):
     full_path = os.path.join(path, directory)
