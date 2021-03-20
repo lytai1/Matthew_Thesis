@@ -69,7 +69,7 @@ def move_files(path, viscodes, folders, patient_id, directory, type_image):
     org_dir = os.path.join(path, directory)
     logger.info(f"remove files in: {org_dir}")
     if os.path.exists(org_dir):
-        os.rmtree(org_dir)
+        shutil.rmtree(org_dir)
 
 def org_dir(path, directory, patient_id):
     full_path = os.path.join(path, directory)
