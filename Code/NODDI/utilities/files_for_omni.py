@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 import os
+import shutil
 import logging
 
 
@@ -55,6 +56,15 @@ def make_directories(viscodes, directory):
 def move_files(path, viscodes, folders, patient_id, directory, type_image):
     logger.info("move " + str(type_image))
 
+    n = len(folders)
+    for i in range(n):
+        viscode_path = os.path.join(path, viscodes[i])
+        type_path = os.path.join(viscode_path, type_image)
+        if not os.path.exists(type_path):
+            logger.info(f"Made directory: {type_path}")
+            os.makedirs(type_path)
+        logger.info(f"Move files in: {folders[i]}")
+        shutil.move(folders[i],type_path)
 
 def org_dir(path, directory, patient_id):
     full_path = os.path.join(path, directory)
@@ -86,14 +96,12 @@ def main():
     
             example command:\n
 
-            python files_for_omni.py --path /home/ltai/mci_di/andi3_data/test/ADNI_pre
+            python files_for_omni.py --path /home/ltai/mci_di/andi3_data/test/ADNI_omniprep
 
             """
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--path', metavar='-p', type=str, help=help)
     args = parser.parse_args()
-
-    logger.info("Program start")
 
     for patient_id in os.listdir(args.path):
         full_path = os.path.join(args.path, patient_id)
