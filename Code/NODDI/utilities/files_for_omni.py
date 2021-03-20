@@ -50,7 +50,7 @@ def make_directories(viscodes, directory):
     for viscode in viscodes:
         viscode_path = os.path.join(directory, viscode)
         if not os.path.exists(viscode_path):
-            logger.info(f"Made directory: {viscode_path}")
+            # logger.info(f"Made directory: {viscode_path}")
             os.makedirs(os.path.join(directory, viscode))
 
 def move_files(path, viscodes, folders, patient_id, directory, type_image):
@@ -65,9 +65,11 @@ def move_files(path, viscodes, folders, patient_id, directory, type_image):
             os.makedirs(type_path)
         all_dir = os.listdir(folders[i])
         logger.info(f"Copy files in: {folders[i]}")
+        logger.info(all_dir)
         for file_name in all_dir:
             full_file_name = os.path.join(folders[i], file_name)
             if os.path.isfile(full_file_name):
+                logger.info(full_file_name)
                 shutil.copy(full_file_name, type_path)
 
 def org_dir(path, directory, patient_id):
@@ -76,9 +78,9 @@ def org_dir(path, directory, patient_id):
     folders = get_all_files_in_directory(full_path) #list of date folders
     make_directories(viscodes, path)
 
-    logger.info(full_path)
-    logger.info(viscodes)
-    logger.info(folders)
+    # logger.info(full_path)
+    # logger.info(viscodes)
+    # logger.info(folders)
 
     if all("Axial" in file for file in folders):
         move_files(path, viscodes, folders, patient_id, directory, "DTI")
