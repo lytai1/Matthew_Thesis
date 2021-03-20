@@ -115,6 +115,6 @@ def main():
 	logging.info("started")
 
 	s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], 'adni3-omni')
-	s3.upload_files('/home/ltai/fci_dti/adni3_data/ad/ADNI_omni_prep', 'ad')
+	s3.upload_files('/home/ltai/fci_dti/adni3_data/ad/ADNI_omni_prep', 'ad/ADNI_omni_prep')
 
 main()
