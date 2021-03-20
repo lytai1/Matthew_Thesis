@@ -5,6 +5,8 @@ import logging
 from botocore.exceptions import ClientError
 from boto3.s3.transfer import S3Transfer
 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class S3Interface:
 
@@ -34,6 +36,8 @@ class S3Interface:
 				self.bucket_name = key.name
 				break
 
+
+
 	def upload_file(self, file_path, destination_path):
 	
 		# based on the file path of the local directory, the bucket name found 
@@ -41,6 +45,23 @@ class S3Interface:
 		try:
 			logging.info(f"Uploading file ({file_path}) to bucket {self.bucket_name} under this path: {destination_path}")
 			self.transfer.upload_file(file_path, self.bucket_name, destination_path)
+		except ClientError as e:
+			logging.error(e)
+			return False
+		return True
+
+	def upload_files(self, file_path, destination_path):
+	
+		# based on the file path of the local directory, the bucket name found 
+		# through th bucket_pattern, and the actual file from the file path
+		try:
+			logging.info(f"Uploading file ({file_path}) to bucket {self.bucket_name} under this path: {destination_path}")
+			for (sourceDir, dirname, filename) in os.walk(file_path):
+				for file in filename:
+					if file[0] != '.':
+						full_path = os.path.join(sourceDir, file)
+						logger.info(full_path)
+						self.transfer.upload_file(full_path, self.bucket_name, os.path.join(destination_path, full_path))
 		except ClientError as e:
 			logging.error(e)
 			return False
@@ -90,3 +111,10 @@ class S3Interface:
 			return False
 		return True	
 			
+def main():
+	logging.info("started")
+
+	s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], 'adni3-omni')
+	s3.upload_files('s3_test/', '')
+
+main()
