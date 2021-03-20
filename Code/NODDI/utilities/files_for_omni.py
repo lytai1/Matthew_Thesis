@@ -68,8 +68,8 @@ def move_files(path, viscodes, folders, patient_id, directory, type_image):
             logger.info(root)
             logger.info(dirs)
             logger.info(files)
-            if os.path.isfile(files):
-                shutil.copy(files, type_path)
+            # if os.path.isfile(files):
+            #     shutil.copy(files, type_path)
 
 def org_dir(path, directory, patient_id):
     full_path = os.path.join(path, directory)
