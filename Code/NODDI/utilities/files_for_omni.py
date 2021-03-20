@@ -55,7 +55,12 @@ def make_directories(viscodes, directory):
 
 def move_files(path, viscodes, folders, patient_id, directory, type_image):
     logger.info("move " + str(type_image))
-
+    logger.info(path)
+    logger.info(viscodes)
+    logger.info(folders)
+    logger.info(patient_id)
+    logger.info(directory)
+    logger.info(type_image)
     n = len(folders)
     for i in range(n):
         viscode_path = os.path.join(path, viscodes[i])
@@ -68,6 +73,7 @@ def move_files(path, viscodes, folders, patient_id, directory, type_image):
             for file in files:
                     if file[-4:].lower() == '.dcm':
                         shutil.copy(os.path.join(root, file), os.path.join(type_path, file))
+        
 
 def org_dir(path, directory, patient_id):
     full_path = os.path.join(path, directory)
@@ -75,12 +81,9 @@ def org_dir(path, directory, patient_id):
     folders = get_all_files_in_directory(full_path) #list of date folders
     make_directories(viscodes, path)
 
-    # logger.info(full_path)
-    # logger.info(viscodes)
-    # logger.info(folders)
-
     if all("Axial" in file for file in folders):
         move_files(path, viscodes, folders, patient_id, directory, "DTI")
+
     elif all("Sag" in file for file in folders):
         move_files(path, viscodes, folders, patient_id, directory, "T1")
 
