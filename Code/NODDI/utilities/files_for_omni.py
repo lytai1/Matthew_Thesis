@@ -63,8 +63,8 @@ def move_files(path, viscodes, folders, patient_id, directory, type_image):
         if not os.path.exists(type_path):
             logger.info(f"Made directory: {type_path}")
             os.makedirs(type_path)
-        logger.info(f"Move files in: {folders[i]}")
-        shutil.move(folders[i],type_path)
+        logger.info(f"Copy files in: {folders[i]}")
+        shutil.copy(folders[i],type_path)
 
 def org_dir(path, directory, patient_id):
     full_path = os.path.join(path, directory)
