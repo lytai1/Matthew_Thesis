@@ -102,7 +102,7 @@ fi
 ## generating binary mask of registered data
 if [[ ! -f "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" ]]; then
   echo "Generating binary mask from registered data"
-  bet $DTI_REG_PATH "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" -m -F
+  bet $DTI_CORR_PATH "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" -m -F
 fi
 
 ## Segment the T1 brain into 3 categories for use in the resulting noddi image 
@@ -112,13 +112,13 @@ fi
 if [[ ! -f "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" ]]; then
   echo "Segment the T1 brain into 3 categories for use in the resulting noddi image"
   mkdir -p "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION"
-  fast -n 3 -o "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_${VISCODE}" ${T1_REG_PATH}
+  fast -n 3 -o "${RESULTS_DIR}/WHITE_MATTER_SEGMENTATION/${PATIENT_NUM}_${VISCODE}" ${T1_SEG_PATH}
 fi
 
 
 echo "Preparing the directory for the patient run"
 mkdir -p $RESULTS_DIR
-cp $DTI_REG_PATH "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}${NII_FILE_EXT}"
+cp $DTI_CORR_PATH "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}${NII_FILE_EXT}"
 cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}.bval" "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}.bval"
 cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}.bvec" "${RESULTS_DIR}/${PATIENT_NUM}_${VISCODE}.bvec"
 cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/mask${NII_FILE_EXT}"
