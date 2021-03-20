@@ -82,12 +82,14 @@ def main():
     
             example command:\n
 
-            python files_for_omni.py --path /home/ltai/mci_di/data_before_process/ADNI/
+            python files_for_omni.py --path /home/ltai/mci_di/andi3_data/test/ADNI_pre
 
             """
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--path', metavar='-p', type=str, help=help)
     args = parser.parse_args()
+
+    logger.info("Program start")
 
     for patient_id in os.listdir(args.path):
         full_path = os.path.join(args.path, patient_id)
