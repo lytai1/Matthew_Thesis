@@ -54,13 +54,6 @@ def make_directories(viscodes, directory):
             os.makedirs(os.path.join(directory, viscode))
 
 def move_files(path, viscodes, folders, patient_id, directory, type_image):
-    logger.info("move " + str(type_image))
-    logger.info(path)
-    logger.info(viscodes)
-    logger.info(folders)
-    logger.info(patient_id)
-    logger.info(directory)
-    logger.info(type_image)
     n = len(folders)
     for i in range(n):
         viscode_path = os.path.join(path, viscodes[i])
@@ -73,7 +66,8 @@ def move_files(path, viscodes, folders, patient_id, directory, type_image):
             for file in files:
                     if file[-4:].lower() == '.dcm':
                         shutil.copy(os.path.join(root, file), os.path.join(type_path, file))
-        
+    logger.info(f"remove files in: {os.path.join(path, directory)}")
+    os.rmdir(os.path.join(path, directory))
 
 def org_dir(path, directory, patient_id):
     full_path = os.path.join(path, directory)
