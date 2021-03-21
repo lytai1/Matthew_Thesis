@@ -60,8 +60,10 @@ class S3Interface:
 				for file in filename:
 					if file[0] != '.':
 						full_path = os.path.join(sourceDir, file)
+						full_distin_path = os.path.join(destination_path, os.path.join(sourceDir[len(file_path)+1], file))
 						logger.info(full_path)
-						self.transfer.upload_file(full_path, self.bucket_name, os.path.join(destination_path, os.path.join(sourceDir[len(file_path)+1], file)))
+						logger.info(full_distin_path)
+						# self.transfer.upload_file(full_path, self.bucket_name, )
 		except ClientError as e:
 			logging.error(e)
 			return False
@@ -115,6 +117,6 @@ def main():
 	logging.info("started")
 
 	s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], 'adni3-omni')
-	s3.upload_files('/home/ltai/fci_dti/adni3_data/ad/ADNI_omni_prep', 'ad/ADNI_omni_prep')
+	s3.upload_files('/home/ltai/fci_dti/adni3_data/test/ADNI_omni_prep', 'test/ADNI_omni_prep')
 
 main()
