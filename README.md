@@ -87,6 +87,15 @@ image: select both "DTI", "MRI" and "and"
 8) select the patients with "Accelerated Sgital MPRAGE" and "Axial DTI"
 9) click one click download ==> all the files should be presented in a "ADNI" directory
 
+# Upload files to S3bucket
+1) cd Code/NODDI/utilities/
+2) export AWSAccessKeyId=yourownkey
+   export AWSSecretKey=yourownkey
+3) conda activate dmipy
+4) pip install boto3
+5) edit the main function in s3_interface.py
+6) run code by `python s3_interface.py`
+
 # To convert DCM files to NIFTI format
 ** run `conda activate dmipy` first
 1) make sure dicom2nifti and dcm2niix is installed in conda environment
