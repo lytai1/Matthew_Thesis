@@ -15,7 +15,7 @@ LOOK_FOR_THESE_FILES = ["Axial_DTI", "Sagittal_3D_Accelerated_MPRAGE", "Accelera
 
 def get_viscodes(path):
     viscodes = ["bl", "m12", "m24", "m36", "m48", "m60", "m72"]
-    files = os.listdir(path)
+    files = os.listdir(path).sort()
 
     dates = []
     for f in files:
