@@ -16,10 +16,10 @@ LOOK_FOR_THESE_FILES = ["Axial_DTI", "Sagittal_3D_Accelerated_MPRAGE", "Accelera
 def get_viscodes(path):
     viscodes = ["bl", "m12", "m24", "m36", "m48", "m60", "m72"]
     files = os.listdir(path)
-    logger.info(files)
-    logger.info(files.sort())
+    files.sort()
+    
     dates = []
-    for f in files.sort():
+    for f in files:
         try:
             date_string = f.split('_')[0]
             date_object = datetime.strptime(date_string, '%Y-%m-%d').date()
