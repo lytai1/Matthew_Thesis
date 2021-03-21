@@ -60,7 +60,7 @@ class S3Interface:
 				for file in filename:
 					if file[0] != '.':
 						full_path = os.path.join(sourceDir, file)
-						full_distin_path = os.path.join(destination_path, os.path.join(sourceDir[len(file_path)+1], file))
+						full_distin_path = os.path.join(destination_path, os.path.join(sourceDir[len(file_path)+1:], file))
 						logger.info(full_path)
 						logger.info(full_distin_path)
 						# self.transfer.upload_file(full_path, self.bucket_name, )
