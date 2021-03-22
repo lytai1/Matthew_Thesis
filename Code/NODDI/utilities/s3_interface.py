@@ -16,9 +16,7 @@ class S3Interface:
 		self.public_key = public_key
 		self.secret_key = secret_key
 		self.bucket_pattern = bucket_pattern
-		logger.info(public_key)
-		logger.info(secret_key)
-		logger.info(bucket_pattern)
+
 		self.transfer = S3Transfer(
 				boto3.client('s3', 'us-east-1',
 					aws_access_key_id=self.public_key,
@@ -129,11 +127,9 @@ def main():
 	parser.add_argument('-d', '--distination', type=str, help="S3 folder directory")
 	
 	args = parser.parse_args()
-	logging.info(args)
 
 	s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], args.bucket)
 	if args.upload:
-		logging.info("upload == true")
 		s3.upload_files(args.path, args.distination)
 
 main()
