@@ -1,6 +1,7 @@
 import boto3
 import boto
 import os
+import argparse
 import logging
 from botocore.exceptions import ClientError
 from boto3.s3.transfer import S3Transfer
@@ -115,8 +116,20 @@ class S3Interface:
 			
 def main():
 	logging.info("started")
+	description = """
+                    upload or download files from S3 bucket
+                    """
+	parser = argparse.ArgumentParser(description=description)
+	parser.add_argument('-u', '--upload', action='store_true', help="upload option")
 
-	s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], 'adni3-omni')
-	s3.upload_files('/home/ltai/fci_dti/adni3_data/cn/ADNI_omni_prep', 'cn/ADNI_omni_prep')
+	parser.add_argument('-b', '--bucket', type=str, help="s3 bucket")
+	parser.add_argument('-p', '--path', type=str, help="local folder directory")
+	parser.add_argument('-d', '--distination', type=str, help="S3 folder directory")
+	
+	args = parser.parse_args()
+
+	s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], args.bucket)
+	if args.upload:
+		s3.upload_files(args.path, args.distination)
 
 main()
