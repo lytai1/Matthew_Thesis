@@ -16,7 +16,9 @@ class S3Interface:
 		self.public_key = public_key
 		self.secret_key = secret_key
 		self.bucket_pattern = bucket_pattern
-
+		logger.info(public_key)
+		logger.info(secret_key)
+		logger.info(bucket_pattern)
 		self.transfer = S3Transfer(
 				boto3.client('s3', 'us-east-1',
 					aws_access_key_id=self.public_key,
