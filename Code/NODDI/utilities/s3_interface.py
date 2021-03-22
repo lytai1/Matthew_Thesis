@@ -127,9 +127,11 @@ def main():
 	parser.add_argument('-d', '--distination', type=str, help="S3 folder directory")
 	
 	args = parser.parse_args()
+	logging.info(args)
 
-	s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], args.bucket)
+	# s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], args.bucket)
 	if args.upload:
-		s3.upload_files(args.path, args.distination)
+		logging.info("upload == true")
+		# s3.upload_files(args.path, args.distination)
 
 main()
