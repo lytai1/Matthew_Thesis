@@ -27,7 +27,7 @@ do
 
 	OLDIFS2=$IFS
 	IFS=','
-	[ ! -f $INPUT_JHU_LIST ] && { echo "$INPUT_JHU_LIST file not found"; exit 99; }
+	[ ! -f $INPUT_MASK_LIST ] && { echo "$INPUT_MASK_LIST file not found"; exit 99; }
 	while read mask_name
 	do
 		MASK_PATH="${MASK_DIR}/${mask_name}_resample.nii.gz"
@@ -41,7 +41,7 @@ do
 			echo "Segmenting the ${mask_name} region using the white matter segmented odi values"
 			fslmaths "${RESULTS_DIR}/odi_segmented.nii.gz" -mas "${MASK_PATH}" "${RESULTS_DIR}/${patient_no}_${viscode}_odi_${mask_name}.nii.gz"
 		fi
-	done < $INPUT_JHU_LIST
+	done < $INPUT_MASK_LIST
 	IFS=$OLDIFS2
 
 done < $INPUT_PATIENT_LIST
