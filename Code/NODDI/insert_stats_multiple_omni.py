@@ -26,7 +26,7 @@ class InsertStats:
         self.adni_path = adni_path
     
         self.patient_df = pd.read_csv(patient_file, header=None, names=["PTID","VISCODE"])
-        self.mask_df = pd.read_csv(mask_file, header=None, names=["volume_no","name"])
+        self.mask_df = pd.read_csv(mask_file, header=None, names=["name"])
         try:
             self.result_df = pd.read_csv(result_file, index_col=["PTID","VISCODE"])
         except pd.errors.EmptyDataError:
