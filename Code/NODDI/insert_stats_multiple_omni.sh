@@ -11,4 +11,4 @@ if [[ ! -f $INFO_DIR ]]; then
 	mkdir -p $INFO_DIR
 fi
 
-python insert_stats_multiple.py --adni $ADNI_DIR --patient $INPUT_PATIENT_LIST --mask ${INPUT_MASK_LIST} --save_to "${INFO_DIR}/ADNI_ODI_RESULTS.csv"
+python insert_stats_multiple_omni.py --adni $ADNI_DIR --patient $INPUT_PATIENT_LIST --mask ${INPUT_MASK_LIST} --save_to "${INFO_DIR}/ADNI_ODI_RESULTS.csv"
