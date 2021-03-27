@@ -2,9 +2,9 @@
 # Purpose: insert statistics into a csv by running insert_stats_multiple.py
 # Author: Lok Yi Tai
 # ------------------------------------------
-ADNI_DIR="/home/ltai/fci_dti/adni3_data/test/ADNI"
-INPUT_PATIENT_LIST="/home/ltai/fci_dti/adni3_data/test/adni3_test_list.csv"
-INPUT_JHU_LIST="/home/ltai/fci_dti/adni3_data/test/mask_list.csv"
+ADNI_DIR="/home/ltai/mci_di/andi3_data/test/ADNI"
+INPUT_PATIENT_LIST="/home/ltai/mci_di/andi3_data/test/adni3_test_list.csv"
+INPUT_JHU_LIST="/home/ltai/mci_di/andi3_data/jhu_mask_list.csv"
 
 INFO_DIR="${ADNI_DIR}/INFO"
 if [[ ! -f $INFO_DIR ]]; then 
