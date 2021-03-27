@@ -10,10 +10,10 @@ INPUT_MASK_LIST="/home/ltai/fci_dti/adni3_data/test/mask_list.csv"
 
 ORIGINAL_DIR=$PWD
 
-
-
 ## Resample all mask tracks
 ## also apply mask to odi_segmented
+
+echo "running run_mask_multiple_omni.sh"
 
 OLDIFS1=$IFS
 IFS=','
