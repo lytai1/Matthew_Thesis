@@ -7,7 +7,7 @@ options:
 	-v The patient viscode e.g. bl
 
 Sample run script:
-bash run_analysis_omni.sh -d /home/ltai/mci_di/andi3_data/test/ADNI_omni -p 032_S_6602 -v bl
+bash run_analysis_omni.sh -d /home/ltai/fci_dti/adni3_data/test/ADNI_omni -p 032_S_6602 -v bl
 DOCS
 
 while getopts d:f:p:v: option
