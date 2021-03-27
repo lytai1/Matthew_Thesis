@@ -23,7 +23,7 @@ do
 	echo "working on patient $patient_no $viscode"
 	PATIENT_DIR="${ADNI_DIR}/$patient_no/$viscode/NODDI"
 	RESULTS_DIR="${PATIENT_DIR}/${patient_no}_${viscode}"
-	MASK_DIR="${ADNI_DIR}/$patient_no/$viscode/Atlas/outputs/atlas_reindex_matrix/conservative/"
+	MASK_DIR="${ADNI_DIR}/$patient_no/$viscode/Atlas/outputs/atlas_reindex_matrix/conservative"
 
 	OLDIFS2=$IFS
 	IFS=','
