@@ -7,3 +7,4 @@
 *.out
 
 Code/test/
+.DS_Store

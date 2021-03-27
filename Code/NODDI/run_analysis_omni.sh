@@ -126,10 +126,15 @@ cp "${NODDI_DIR}/${PATIENT_NUM}_${VISCODE}_mask${NII_FILE_EXT}" "${RESULTS_DIR}/
 echo "Running NODDI analysis"
 python run_noddi.py --path $RESULTS_DIR --model 1 --label adni 
 
+echo "resample the WM segmentation files to match the odi.nii.gz"
+flirt -in "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" -ref "${RESULTS_DIR}/odi.nii.gz" -applyxfm -usesqform -out "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_${VISCODE}_pve_2_resampled.nii.gz"
+
+
+
 ## Segment the white matter via the T1
 ## ignore everything that is not white matter
 echo "Masking the odi values generated with the white matter segmentation from the patients T1"
-fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_${VISCODE}_pve_2.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
+fslmaths "${RESULTS_DIR}/odi.nii.gz" -mas "${WHITE_MATTER_SEG_PATH}/${PATIENT_NUM}_${VISCODE}_pve_2_resampled.nii.gz" "${RESULTS_DIR}/odi_segmented.nii.gz"
 
 echo
 echo "*******************************************************************************************************************"
