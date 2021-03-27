@@ -77,11 +77,12 @@ class InsertStats:
             It calls post_process_run to extract odi value of individual mask of each patient.
         """
         for p_row in self.patient_df.itertuples():
-            print(p_row)
             path = os.path.join(self.adni_path, p_row.PTID + "/" + p_row.VISCODE + "/NODDI")
             path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE)
 
             for m_row in self.mask_df.itertuples():
+                print(m_row)
+
                 odi_path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE + "_odi_" + m_row.name + ".nii.gz")
                 try: 
                     self.post_process_run(odi_path, p_row.PTID, p_row.VISCODE, m_row.name)
