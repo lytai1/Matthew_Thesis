@@ -78,8 +78,8 @@ class InsertStats:
         """
         for p_row in self.patient_df.itertuples():
             path = os.path.join(self.adni_path, p_row.PTID + "/" + p_row.VISCODE)
-            path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE)
             path = os.path.join(path, "NODDI")
+            path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE)
 
             for m_row in self.mask_df.itertuples():
                 odi_path = os.path.join(path, p_row.PTID + "_" + p_row.VISCODE + "_odi_" + m_row.name + ".nii.gz")
