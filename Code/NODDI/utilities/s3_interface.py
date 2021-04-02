@@ -94,6 +94,9 @@ class S3Interface:
 					full_distin_path = os.path.join(destination_file_name, full_path[len(object_name)+1:])
 					logger.info(full_path)
 					logger.info(full_distin_path)
+					directory, file_name = os.path.split(full_distin_path)
+					if not os.path.isdir(directory):
+						os.makedirs(directory, exist_ok=True)
 					self.transfer.download_file(self.bucket_name, full_path, full_distin_path)
 		except ClientError as e:
 			logging.error(e)
