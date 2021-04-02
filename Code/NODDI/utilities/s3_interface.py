@@ -93,22 +93,26 @@ class S3Interface:
 			print(object_list)
 			for obj_dict in object_list:
 				if obj_dict['Size'] != 0:
-					path_to, filename = os.path.split(obj_dict['Key'])
-					path_to, one_up = os.path.split(path_to)
-					_, two_up = os.path.split(path_to)
-					destination_directory = os.path.join(destination_file_name, two_up, one_up)
-					if os.path.exists(os.path.join(destination_directory, filename)):
-						continue	
-					os.makedirs(destination_directory, exist_ok=True)
-					print(obj_dict)
-					key = obj_dict['Key']
-					print(f"base name = {os.path.basename(key)}")
-					logging.info(f"Downloading {key}")
-					self.transfer.download_file(self.bucket_name, key,
-									os.path.join(destination_file_name,
-											os.path.join(two_up, one_up, filename)
-									)
-					)
+					full_path = obj_dict['Key']
+					full_distin_path = os.path.join(destination_file_name, full_path[len(object_name)+1:])
+					logger.info(full_path)
+					logger.info(full_distin_path)
+					# path_to, filename = os.path.split(obj_dict['Key'])
+					# path_to, one_up = os.path.split(path_to)
+					# _, two_up = os.path.split(path_to)
+					# destination_directory = os.path.join(destination_file_name, two_up, one_up)
+					# if os.path.exists(os.path.join(destination_directory, filename)):
+					# 	continue	
+					# os.makedirs(destination_directory, exist_ok=True)
+					# print(obj_dict)
+					# key = obj_dict['Key']
+					# print(f"base name = {os.path.basename(key)}")
+					# logging.info(f"Downloading {key}")
+					# self.transfer.download_file(self.bucket_name, key,
+					# 				os.path.join(destination_file_name,
+					# 						os.path.join(two_up, one_up, filename)
+					# 				)
+					# )
 		except ClientError as e:
 			logging.error(e)
 			return False
