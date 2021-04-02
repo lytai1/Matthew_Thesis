@@ -104,11 +104,11 @@ class S3Interface:
 					key = obj_dict['Key']
 					print(f"base name = {os.path.basename(key)}")
 					logging.info(f"Downloading {key}")
-					# self.transfer.download_file(self.bucket_name, key,
-					# 				os.path.join(destination_file_name,
-					# 						os.path.join(two_up, one_up, filename)
-					# 				)
-					# )
+					self.transfer.download_file(self.bucket_name, key,
+									os.path.join(destination_file_name,
+											os.path.join(two_up, one_up, filename)
+									)
+					)
 		except ClientError as e:
 			logging.error(e)
 			return False
