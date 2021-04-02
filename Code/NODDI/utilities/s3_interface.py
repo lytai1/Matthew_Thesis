@@ -104,11 +104,11 @@ class S3Interface:
 					key = obj_dict['Key']
 					print(f"base name = {os.path.basename(key)}")
 					logging.info(f"Downloading {key}")
-					self.transfer.download_file(self.bucket_name, key,
-									os.path.join(destination_file_name,
-											os.path.join(two_up, one_up, filename)
-									)
-					)
+					# self.transfer.download_file(self.bucket_name, key,
+					# 				os.path.join(destination_file_name,
+					# 						os.path.join(two_up, one_up, filename)
+					# 				)
+					# )
 		except ClientError as e:
 			logging.error(e)
 			return False
@@ -121,6 +121,7 @@ def main():
                     """
 	parser = argparse.ArgumentParser(description=description)
 	parser.add_argument('-u', '--upload', action='store_true', help="upload option")
+	parser.add_argument('-v', '--download', action='store_true', help="download option")
 
 	parser.add_argument('-b', '--bucket', type=str, help="s3 bucket")
 	parser.add_argument('-p', '--path', type=str, help="local folder directory")
@@ -131,5 +132,6 @@ def main():
 	s3 = S3Interface(os.environ['AWSAccessKeyId'], os.environ['AWSSecretKey'], args.bucket)
 	if args.upload:
 		s3.upload_files(args.path, args.distination)
-
+	elif args.download:
+		s3.download_files(args.distination, args.path)
 main()

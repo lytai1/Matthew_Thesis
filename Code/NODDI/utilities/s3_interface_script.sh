@@ -12,4 +12,4 @@ if [[ ! -f "past_runs/" ]]; then
   mkdir -p "past_runs/"
 fi
 
-python s3_interface.py -u -b adni3-omni -p /home/ltai/fci_dti/adni3_data/cn/ADNI_omni_prep -d cn/ADNI_omni_prep
+python s3_interface.py -d -b adni3-omni -p /home/ltai/fci_dti/adni3_data/test/ADNI_omni_prep -d test/ADNI_omni_prep/022_S_6013/
