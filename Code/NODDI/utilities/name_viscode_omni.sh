@@ -2,6 +2,7 @@ while getopts d: option
 	do
 	case "${option}" in
 		d) ADNI_DIR=${OPTARG};;
+        l) PATIENT_LIST=${OPTARG}
 		*) INVALID_ARGS=${OPTARG};;
 	esac
 done
@@ -16,6 +17,6 @@ do
        echo "${patient_no}, ${viscode}"
     done
     cd ..
-done
+done > "${ADNI_DIR}/$PATIENT_LIST"
 
 cd $ORIGINAL_DIR
