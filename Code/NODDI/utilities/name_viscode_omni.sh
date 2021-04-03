@@ -8,5 +8,5 @@ done
 
 for patient_no in ${ANDI_DIR}/*
 do 
-    ls ${ANDI_DIR}/$patient_no
+    echo "$ANDI_DIR/$patient_no"
 done
