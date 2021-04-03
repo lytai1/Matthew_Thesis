@@ -1,4 +1,4 @@
-while getopts d: option
+while getopts d:l: option
 	do
 	case "${option}" in
 		d) ADNI_DIR=${OPTARG};;
