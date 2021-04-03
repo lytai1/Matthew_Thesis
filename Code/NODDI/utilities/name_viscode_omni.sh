@@ -12,7 +12,7 @@ cd ${ADNI_DIR}
 for patient_no in */
 do 
     cd $patient_no
-    rm -R " "*/
+    # rm -R " "*/
     for viscode in *
     do
         # mv $viscode ${viscode#ses-}
