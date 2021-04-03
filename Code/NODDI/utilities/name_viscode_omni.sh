@@ -9,7 +9,7 @@ done
 ORIGINAL_DIR=$PWD
 
 cd ${ADNI_DIR}
-for patient_no in *
+for patient_no in */
 do 
     cd $patient_no
     for viscode in *
