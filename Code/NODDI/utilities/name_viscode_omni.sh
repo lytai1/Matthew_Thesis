@@ -2,7 +2,7 @@ while getopts d: option
 	do
 	case "${option}" in
 		d) ADNI_DIR=${OPTARG};;
-        l) PATIENT_LIST=${OPTARG}
+        l) PATIENT_LIST=${OPTARG};;
 		*) INVALID_ARGS=${OPTARG};;
 	esac
 done
