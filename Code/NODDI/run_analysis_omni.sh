@@ -2,7 +2,6 @@
 << 'DOCS'
 options:
 	-d The ADNI directory
-	-f The FSL directory
 	-p The patient number "###_S_####"
 	-v The patient viscode e.g. bl
 
