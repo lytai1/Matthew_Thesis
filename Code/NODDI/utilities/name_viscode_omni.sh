@@ -14,7 +14,7 @@ do
     cd $patient_no
     for viscode in *
     do
-       echo "${patient_no}, ${viscode}"
+       echo "${patient_no::-1}, ${viscode}"
     done
     cd ..
 done 
