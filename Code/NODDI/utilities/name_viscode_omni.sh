@@ -15,7 +15,7 @@ do
     for viscode in *
     do
         # mv $viscode ${viscode#ses-}
-        echo "${patient_no::-1}, ${viscode#ses-}"
+        echo "${patient_no::-1},${viscode#ses-}"
     done
     cd ..
 done > ${ADNI_DIR}/${PATIENT_LIST}
