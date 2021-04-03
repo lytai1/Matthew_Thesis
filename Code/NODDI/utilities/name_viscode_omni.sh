@@ -5,10 +5,17 @@ while getopts d: option
 		*) INVALID_ARGS=${OPTARG};;
 	esac
 done
+ORIGINAL_DIR=$PWD
+cd ${ADNI_DIR}
 
-echo ${ADNI_DIR}
-
-for patient_no in "${ANDI_DIR}"/*
+for patient_no in *
 do 
-    echo "$ANDI_DIR/$patient_no"
+    cd $patient_no
+    for viscode in *
+    do
+       echo "${patient_no}, ${viscode}"
+    done
+    cd ..
 done
+
+cd $ORIGINAL_DIR
