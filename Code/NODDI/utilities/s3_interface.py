@@ -88,17 +88,19 @@ class S3Interface:
 		try:
 			logging.info(f"Downloading files")
 			object_list = self.s3_client.list_objects(Bucket=self.bucket_name, Prefix=object_name)['Contents']
+			logger.info(len(object_list))
 			for obj_dict in object_list:
 				if obj_dict['Size'] != 0:
 					full_path = obj_dict['Key']
 					full_distin_path = os.path.join(destination_file_name, full_path[len(object_name)+1:])
-					logger.info(full_path)
-					logger.info(full_distin_path)
 					directory, file_name = os.path.split(full_distin_path)
 					if not os.path.isdir(directory):
 						os.makedirs(directory, exist_ok=True)
 					if not os.path.isfile(full_distin_path):
+						logger.info(full_path)
+						logger.info(full_distin_path)
 						self.transfer.download_file(self.bucket_name, full_path, full_distin_path)
+			logger.info("finished download.")
 		except ClientError as e:
 			logging.error(e)
 			return False
