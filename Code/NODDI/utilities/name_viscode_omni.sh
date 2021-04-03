@@ -18,6 +18,6 @@ do
         echo "${patient_no::-1}, ${viscode#ses-}"
     done
     cd ..
-done #> ${ADNI_DIR}/${PATIENT_LIST}
+done > ${ADNI_DIR}/${PATIENT_LIST}
 
 cd $ORIGINAL_DIR
