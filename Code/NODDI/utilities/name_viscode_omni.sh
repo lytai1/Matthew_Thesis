@@ -7,8 +7,8 @@ while getopts d:l: option
 	esac
 done
 ORIGINAL_DIR=$PWD
-cd ${ADNI_DIR}
 
+cd ${ADNI_DIR}
 for patient_no in *
 do 
     cd $patient_no
@@ -17,6 +17,6 @@ do
        echo "${patient_no}, ${viscode}"
     done
     cd ..
-done > ${ADNI_DIR}/$PATIENT_LIST
+done 
 
 cd $ORIGINAL_DIR
