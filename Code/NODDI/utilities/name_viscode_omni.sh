@@ -8,7 +8,7 @@ done
 
 echo ${ADNI_DIR}
 
-for patient_no in "${ANDI_DIR}/*"
+for patient_no in /${ANDI_DIR}/*
 do 
     echo "$ANDI_DIR/$patient_no"
 done
